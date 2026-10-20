@@ -4,6 +4,9 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   initAntigravityBackground();
+  initAudioFeedback();
+  initCard3DTilt();
+  initArchitecturePlayground();
   initNavigation();
   renderProjects();
   renderSkills();
@@ -783,14 +786,215 @@ function initSecureContactPipeline() {
   });
 }
 
-function showToast(message) {
-  const toast = document.getElementById("toast");
-  if (!toast) return;
-  toast.textContent = message;
-  toast.classList.add("show");
-  setTimeout(() => {
-    toast.classList.remove("show");
-  }, 3000);
+// ==================== Feature 4: Web Audio Sci-Fi Mechanical Sound Effects ====================
+let audioCtx = null;
+let sfxEnabled = true;
+
+function getAudioContext() {
+  if (!audioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) audioCtx = new AudioContextClass();
+  }
+  if (audioCtx && audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+function playSfx(type = "click") {
+  if (!sfxEnabled) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    const now = ctx.currentTime;
+
+    if (type === "click") {
+      // Soft mechanical tactile switch click
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(820, now);
+      osc.frequency.exponentialRampToValueAtTime(320, now + 0.04);
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+      osc.start(now);
+      osc.stop(now + 0.04);
+    } else if (type === "overclock") {
+      // Sci-fi high-voltage reactor hum
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(140, now);
+      osc.frequency.exponentialRampToValueAtTime(680, now + 0.35);
+      gain.gain.setValueAtTime(0.07, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+      osc.start(now);
+      osc.stop(now + 0.35);
+    } else if (type === "success") {
+      // Dual harmonic chime
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(523.25, now); // C5
+      osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+      gain.gain.setValueAtTime(0.09, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
+      osc.start(now);
+      osc.stop(now + 0.28);
+    } else if (type === "blip") {
+      // Subtle data blip
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(1200, now);
+      osc.frequency.exponentialRampToValueAtTime(800, now + 0.03);
+      gain.gain.setValueAtTime(0.04, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03);
+      osc.start(now);
+      osc.stop(now + 0.03);
+    }
+  } catch (_) {}
+}
+
+function initAudioFeedback() {
+  const toggleBtn = document.getElementById("btn-sfx-toggle");
+  const statusIcon = document.getElementById("sfx-status-icon");
+  const statusText = document.getElementById("sfx-status-text");
+
+  // Read persisted preference
+  try {
+    const saved = localStorage.getItem("r3xo_sfx_pref");
+    if (saved !== null) {
+      sfxEnabled = saved === "true";
+    }
+  } catch (_) {}
+
+  const updateUi = () => {
+    if (statusIcon) statusIcon.textContent = sfxEnabled ? "🔊" : "🔇";
+    if (statusText) {
+      statusText.textContent = sfxEnabled ? "ON" : "OFF";
+      statusText.className = sfxEnabled ? "text-emerald-400 font-semibold" : "text-zinc-500 font-normal";
+    }
+  };
+  updateUi();
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      sfxEnabled = !sfxEnabled;
+      try {
+        localStorage.setItem("r3xo_sfx_pref", sfxEnabled);
+      } catch (_) {}
+      updateUi();
+      if (sfxEnabled) playSfx("success");
+    });
+  }
+
+  // Attach mechanical clicks to global navigation and interactive elements
+  document.addEventListener("click", (e) => {
+    const target = e.target.closest("button, a, .repo-select-item, .review-type-card");
+    if (target && target.id !== "btn-sfx-toggle" && target.id !== "term-run-btn") {
+      playSfx("click");
+    }
+  });
+}
+
+// ==================== Feature 3: Aceternity 3D Card Tilt & Holographic Sheen ====================
+function initCard3DTilt() {
+  // Check if touch device (disable heavy 3D math on mobile touch)
+  if (window.matchMedia("(pointer: coarse)").matches) return;
+
+  function attachTiltToCard(card) {
+    if (card.__tiltAttached) return;
+    card.__tiltAttached = true;
+
+    card.addEventListener("mousemove", (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      // Update holographic sheen reflection coordinate
+      card.style.setProperty("--mouse-x", `${x}px`);
+      card.style.setProperty("--mouse-y", `${y}px`);
+
+      // Calculate tilt angles (-7deg to +7deg)
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = ((y - centerY) / centerY) * -6;
+      const rotateY = ((x - centerX) / centerX) * 6;
+
+      card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateZ(4px)`;
+    });
+
+    card.addEventListener("mouseleave", () => {
+      card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)";
+    });
+  }
+
+  // Attach to existing cards
+  document.querySelectorAll(".aceternity-card").forEach(attachTiltToCard);
+
+  // Observer for dynamically injected project & review cards
+  const observer = new MutationObserver(() => {
+    document.querySelectorAll(".aceternity-card").forEach(attachTiltToCard);
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
+// ==================== Feature 2: Interactive Architecture Playground ====================
+function initArchitecturePlayground() {
+  const slider = document.getElementById("slider-throughput");
+  const rpsVal = document.getElementById("playground-rps");
+  const memVal = document.getElementById("playground-mem");
+  const latVal = document.getElementById("playground-lat");
+  const lagVal = document.getElementById("playground-lag");
+
+  const owaspInput = document.getElementById("owasp-input");
+  const owaspOutput = document.getElementById("owasp-output");
+  const owaspBadge = document.getElementById("owasp-badge");
+
+  if (slider && rpsVal && memVal && latVal && lagVal) {
+    slider.addEventListener("input", (e) => {
+      const rps = parseInt(e.target.value, 10);
+      rpsVal.textContent = `${rps.toLocaleString()} req/s`;
+
+      // Live non-linear systems modeling formulas
+      // Memory: Sub-linear scaling using high performance async pools (<25MB invariant)
+      const memory = (14.2 + Math.pow(rps / 1000, 0.4) * 3.6).toFixed(1);
+      // Latency: Sub-3ms P99 due to uvloop / AsyncIO
+      const latency = (0.8 + (rps / 10000) * 1.8).toFixed(1);
+      // Event loop lag: Sub-millisecond tick latency
+      const lag = (0.05 + (rps / 10000) * 0.32).toFixed(2);
+
+      memVal.textContent = `${memory} MB`;
+      latVal.textContent = `${latency} ms`;
+      lagVal.textContent = `${lag} ms`;
+
+      if (rps % 500 === 0) playSfx("blip");
+    });
+  }
+
+  if (owaspInput && owaspOutput && owaspBadge) {
+    owaspInput.addEventListener("input", (e) => {
+      const raw = e.target.value;
+      const isDangerous = /^[=+\-@\t\r]/.test(raw.trim());
+
+      // Safe escape logic identical to backend invariants
+      let sanitized = raw.replace(/[<>&"']/g, (m) => {
+        return { "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&#39;" }[m];
+      });
+      if (/^[=+\-@\t\r]/.test(sanitized)) {
+        sanitized = `'${sanitized}`;
+      }
+
+      owaspOutput.textContent = sanitized || "(empty)";
+
+      if (isDangerous) {
+        owaspBadge.textContent = "Neutralized (Prepend ')";
+        owaspBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-400 border border-emerald-700 animate-pulse";
+      } else {
+        owaspBadge.textContent = "Safe Content";
+        owaspBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700";
+      }
+    });
+  }
 }
 
 // Terminal Extreme Reactor Overclock Simulation
@@ -828,6 +1032,8 @@ function initTerminalSimulation() {
       termCard.classList.add("terminal-ignited", "scanline-overlay");
     }
 
+    playSfx("overclock");
+
     outputEl.classList.remove("hidden");
     outputEl.innerHTML = `<div class="text-zinc-500 font-mono flex items-center gap-2 mb-2"><span class="cursor-blink"></span> Initializing system ignition sequence...</div>`;
 
@@ -835,6 +1041,8 @@ function initTerminalSimulation() {
     for (let i = 0; i < sequence.length; i++) {
       const step = sequence[i];
       await new Promise((resolve) => setTimeout(resolve, step.delay));
+
+      playSfx("blip");
 
       const lineEl = document.createElement("div");
       lineEl.className = `font-mono text-xs leading-relaxed transition-all duration-150 transform translate-y-1 opacity-0 ${step.color}`;
@@ -859,6 +1067,7 @@ function initTerminalSimulation() {
       termCard.classList.add("terminal-stabilized");
     }
 
+    playSfx("success");
     runBtn.innerHTML = `<span class="text-emerald-400 font-semibold">✓ Overclocked</span>`;
     showToast("⚡ Core Overclock Successful: System Stabilized!");
 

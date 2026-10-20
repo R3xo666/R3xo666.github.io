@@ -71,20 +71,43 @@ body {
   will-change: transform;
 }
 
-/* Aceternity Style Cards */
+/* Aceternity Style Cards with 3D Tilt & Holographic Sheen */
 .aceternity-card {
   background: #09090b;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 1rem;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out, border-color 0.25s ease, box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+/* Holographic Sheen Sweep across Card Surface */
+.aceternity-card::before {
+  content: "";
+  position: absolute;
+  inset: -100%;
+  background: radial-gradient(
+    circle 320px at var(--mouse-x, -500px) var(--mouse-y, -500px),
+    rgba(255, 255, 255, 0.08),
+    rgba(56, 189, 248, 0.04),
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.aceternity-card:hover::before {
+  opacity: 1;
 }
 
 .aceternity-card:hover {
-  background: #111114;
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
 }
 
 /* Floating Navbar Pill */

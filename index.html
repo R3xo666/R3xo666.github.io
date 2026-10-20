@@ -79,6 +79,12 @@
         </button>
       </div>
 
+      <!-- Sound FX Toggle Pill -->
+      <button id="btn-sfx-toggle" class="inline-flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-full bg-zinc-900/90 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition border border-zinc-800" title="Toggle Mechanical Audio Feedback">
+        <span id="sfx-status-icon">🔊</span>
+        <span class="hidden md:inline text-[11px]">SFX: <span id="sfx-status-text" class="text-emerald-400 font-semibold">ON</span></span>
+      </button>
+
       <!-- GitHub Action Pill -->
       <a href="https://github.com/R3xo666" target="_blank" rel="noopener noreferrer" 
          class="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium px-3.5 py-1 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white transition border border-zinc-800">
@@ -171,23 +177,80 @@ developer = {
         </div>
       </div>
 
-      <!-- Minimalist Numbers Banner -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="aceternity-card p-5 text-center">
-          <div id="stat-repo-count" class="text-2xl font-bold text-white font-mono">4</div>
-          <div class="text-xs text-zinc-500 mt-1">Live Micro-SaaS Repos</div>
+      <!-- Interactive Architecture Bento Playground (Feature 2) -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between pb-1">
+          <span class="text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Interactive Micro-SaaS Invariants Lab
+          </span>
+          <span class="text-[11px] font-mono text-zinc-500">Live Client-side Simulation</span>
         </div>
-        <div class="aceternity-card p-5 text-center">
-          <div class="text-2xl font-bold text-white font-mono">100%</div>
-          <div class="text-xs text-zinc-500 mt-1">Test Pass Rate (Pytest)</div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Widget 1: Real-time Payload & Latency Simulator -->
+          <div class="aceternity-card p-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono text-zinc-400">⚡ Dynamic Throughput Stress Test</span>
+              <span id="playground-rps" class="text-xs font-mono px-2 py-0.5 rounded bg-zinc-800 text-sky-400 border border-zinc-700">1,200 req/s</span>
+            </div>
+            
+            <input id="slider-throughput" type="range" min="100" max="10000" step="100" value="1200" 
+                   class="w-full accent-sky-400 bg-zinc-800 h-1.5 rounded-lg cursor-pointer">
+
+            <div class="grid grid-cols-3 gap-2 pt-2 text-center font-mono">
+              <div class="p-2 rounded-lg bg-black/40 border border-zinc-800">
+                <div class="text-[10px] text-zinc-500">Memory Footprint</div>
+                <div id="playground-mem" class="text-xs font-bold text-white mt-0.5">18.4 MB</div>
+              </div>
+              <div class="p-2 rounded-lg bg-black/40 border border-zinc-800">
+                <div class="text-[10px] text-zinc-500">P99 Latency</div>
+                <div id="playground-lat" class="text-xs font-bold text-emerald-400 mt-0.5">1.4 ms</div>
+              </div>
+              <div class="p-2 rounded-lg bg-black/40 border border-zinc-800">
+                <div class="text-[10px] text-zinc-500">Event Loop Lag</div>
+                <div id="playground-lag" class="text-xs font-bold text-purple-400 mt-0.5">0.12 ms</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Widget 2: Live OWASP CWE-1236 Formula Injection Defense Simulator -->
+          <div class="aceternity-card p-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono text-zinc-400">🛡️ OWASP CWE-1236 Sanitizer Demo</span>
+              <span id="owasp-badge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800">Neutralized</span>
+            </div>
+
+            <div class="relative">
+              <input id="owasp-input" type="text" value="=cmd|' /C calc'!A0" placeholder="Type malicious formula (=, +, -, @)..." 
+                     class="w-full px-3 py-1.5 rounded-lg bg-black/60 border border-zinc-800 text-xs font-mono text-zinc-300 focus:outline-none focus:border-emerald-500/80 transition">
+            </div>
+
+            <div class="p-2.5 rounded-lg bg-black/50 border border-zinc-800 flex items-center justify-between text-xs font-mono">
+              <span class="text-zinc-500">Clean Escaped Output:</span>
+              <span id="owasp-output" class="text-emerald-400 font-semibold truncate max-w-[200px]">'=cmd|' /C calc'!A0</span>
+            </div>
+          </div>
         </div>
-        <div class="aceternity-card p-5 text-center">
-          <div class="text-2xl font-bold text-white font-mono">CWE-1236</div>
-          <div class="text-xs text-zinc-500 mt-1">OWASP Defense Built-in</div>
-        </div>
-        <div class="aceternity-card p-5 text-center">
-          <div class="text-2xl font-bold text-white font-mono">&lt;25 MB</div>
-          <div class="text-xs text-zinc-500 mt-1">Daemon Memory Footprint</div>
+
+        <!-- 4 Essential Metrics Bar -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-1">
+          <div class="aceternity-card p-4 text-center">
+            <div id="stat-repo-count" class="text-xl font-bold text-white font-mono">4</div>
+            <div class="text-[11px] text-zinc-500 mt-0.5">Live Micro-SaaS Repos</div>
+          </div>
+          <div class="aceternity-card p-4 text-center">
+            <div class="text-xl font-bold text-white font-mono">100%</div>
+            <div class="text-[11px] text-zinc-500 mt-0.5">Test Pass Rate (Pytest)</div>
+          </div>
+          <div class="aceternity-card p-4 text-center">
+            <div class="text-xl font-bold text-white font-mono">CWE-1236</div>
+            <div class="text-[11px] text-zinc-500 mt-0.5">OWASP Defense Built-in</div>
+          </div>
+          <div class="aceternity-card p-4 text-center">
+            <div class="text-xl font-bold text-white font-mono">&lt;25 MB</div>
+            <div class="text-[11px] text-zinc-500 mt-0.5">Daemon Memory Footprint</div>
+          </div>
         </div>
       </div>
 
