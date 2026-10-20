@@ -786,6 +786,17 @@ function initSecureContactPipeline() {
   });
 }
 
+// Global Toast Notification Helper
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+  toast.textContent = message;
+  toast.classList.add("show");
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3200);
+}
+
 // ==================== Feature 4: Web Audio Sci-Fi Mechanical Sound Effects ====================
 let audioCtx = null;
 let sfxEnabled = true;
@@ -815,41 +826,41 @@ function playSfx(type = "click") {
     const now = ctx.currentTime;
 
     if (type === "click") {
-      // Soft mechanical tactile switch click
+      // Tactile mechanical switch click
       osc.type = "sine";
-      osc.frequency.setValueAtTime(820, now);
-      osc.frequency.exponentialRampToValueAtTime(320, now + 0.04);
-      gain.gain.setValueAtTime(0.08, now);
+      osc.frequency.setValueAtTime(860, now);
+      osc.frequency.exponentialRampToValueAtTime(340, now + 0.05);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+      osc.start(now);
+      osc.stop(now + 0.05);
+    } else if (type === "overclock") {
+      // Powerful deep sci-fi reactor overclock hum with frequency surge
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(120, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.5);
+      gain.gain.setValueAtTime(0.22, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+      osc.start(now);
+      osc.stop(now + 0.5);
+    } else if (type === "success") {
+      // Dual harmonic sci-fi quantum stabilization chime
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(523.25, now); // C5
+      osc.frequency.setValueAtTime(783.99, now + 0.1); // G5
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+      osc.start(now);
+      osc.stop(now + 0.4);
+    } else if (type === "blip") {
+      // Punchy mechanical typewriter data tick
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(1400, now);
+      osc.frequency.exponentialRampToValueAtTime(600, now + 0.04);
+      gain.gain.setValueAtTime(0.12, now);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
       osc.start(now);
       osc.stop(now + 0.04);
-    } else if (type === "overclock") {
-      // Sci-fi high-voltage reactor hum
-      osc.type = "sawtooth";
-      osc.frequency.setValueAtTime(140, now);
-      osc.frequency.exponentialRampToValueAtTime(680, now + 0.35);
-      gain.gain.setValueAtTime(0.07, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
-      osc.start(now);
-      osc.stop(now + 0.35);
-    } else if (type === "success") {
-      // Dual harmonic chime
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(523.25, now); // C5
-      osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
-      gain.gain.setValueAtTime(0.09, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
-      osc.start(now);
-      osc.stop(now + 0.28);
-    } else if (type === "blip") {
-      // Subtle data blip
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(1200, now);
-      osc.frequency.exponentialRampToValueAtTime(800, now + 0.03);
-      gain.gain.setValueAtTime(0.04, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03);
-      osc.start(now);
-      osc.stop(now + 0.03);
     }
   } catch (_) {}
 }
@@ -1038,44 +1049,48 @@ function initTerminalSimulation() {
     outputEl.innerHTML = `<div class="text-zinc-500 font-mono flex items-center gap-2 mb-2"><span class="cursor-blink"></span> Initializing system ignition sequence...</div>`;
 
     // Multi-stage typewriter sequence
-    for (let i = 0; i < sequence.length; i++) {
-      const step = sequence[i];
-      await new Promise((resolve) => setTimeout(resolve, step.delay));
+    try {
+      for (let i = 0; i < sequence.length; i++) {
+        const step = sequence[i];
+        await new Promise((resolve) => setTimeout(resolve, step.delay));
 
-      playSfx("blip");
+        try { playSfx("blip"); } catch (_) {}
 
-      const lineEl = document.createElement("div");
-      lineEl.className = `font-mono text-xs leading-relaxed transition-all duration-150 transform translate-y-1 opacity-0 ${step.color}`;
-      lineEl.innerHTML = step.text;
-      outputEl.appendChild(lineEl);
+        const lineEl = document.createElement("div");
+        lineEl.className = `font-mono text-xs leading-relaxed transition-all duration-150 transform translate-y-1 opacity-0 ${step.color}`;
+        lineEl.innerHTML = step.text;
+        outputEl.appendChild(lineEl);
 
-      // Trigger enter animation
-      requestAnimationFrame(() => {
-        lineEl.classList.remove("translate-y-1", "opacity-0");
-      });
+        // Trigger enter animation
+        requestAnimationFrame(() => {
+          lineEl.classList.remove("translate-y-1", "opacity-0");
+        });
 
-      // Subtle pulse during middle reactor critical phase
-      if (i === 1 && termCard) {
-        showToast("⚠️ WARNING: High thermal velocity detected!");
+        // Subtle pulse during middle reactor critical phase
+        if (i === 1) {
+          try { showToast("⚠️ WARNING: High thermal velocity detected!"); } catch (_) {}
+        }
       }
+    } catch (err) {
+      console.warn("[Terminal Engine Notice]:", err);
+    } finally {
+      // Stabilize reactor after sequence completes
+      await new Promise((resolve) => setTimeout(resolve, 350));
+      if (termCard) {
+        termCard.classList.remove("terminal-ignited");
+        termCard.classList.add("terminal-stabilized");
+      }
+
+      try { playSfx("success"); } catch (_) {}
+      runBtn.innerHTML = `<span class="text-emerald-400 font-semibold">✓ Overclocked</span>`;
+      try { showToast("⚡ Core Overclock Successful: System Stabilized!"); } catch (_) {}
+
+      setTimeout(() => {
+        runBtn.innerHTML = originalText;
+        runBtn.disabled = false;
+        isRunning = false;
+      }, 4500);
     }
-
-    // Stabilize reactor after sequence completes
-    await new Promise((resolve) => setTimeout(resolve, 350));
-    if (termCard) {
-      termCard.classList.remove("terminal-ignited");
-      termCard.classList.add("terminal-stabilized");
-    }
-
-    playSfx("success");
-    runBtn.innerHTML = `<span class="text-emerald-400 font-semibold">✓ Overclocked</span>`;
-    showToast("⚡ Core Overclock Successful: System Stabilized!");
-
-    setTimeout(() => {
-      runBtn.innerHTML = originalText;
-      runBtn.disabled = false;
-      isRunning = false;
-    }, 4500);
   });
 }
 
