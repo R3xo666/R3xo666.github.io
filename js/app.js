@@ -41,8 +41,11 @@ function initNavigation() {
   const tabContents = document.querySelectorAll(".tab-content");
 
   function switchTab(targetTabId) {
+    if (!targetTabId) return;
+    const normalized = targetTabId.startsWith("tab-") ? targetTabId : `tab-${targetTabId}`;
+
     navPills.forEach((pill) => {
-      if (pill.dataset.tab === targetTabId) {
+      if (pill.dataset.tab === normalized) {
         pill.classList.add("active");
         pill.setAttribute("aria-selected", "true");
       } else {
@@ -52,7 +55,7 @@ function initNavigation() {
     });
 
     tabContents.forEach((tab) => {
-      if (tab.id === targetTabId) {
+      if (tab.id === normalized) {
         tab.classList.add("active");
       } else {
         tab.classList.remove("active");
@@ -71,19 +74,29 @@ function initNavigation() {
     });
   });
 
-  // Direct hash navigation
-  const hash = window.location.hash.replace("#", "");
-  if (hash) {
-    const targetPill = document.querySelector(`[data-tab="tab-${hash}"]`);
-    if (targetPill) switchTab(`tab-${hash}`);
+  // Direct hash navigation on initial load
+  const initialHash = window.location.hash.replace("#", "");
+  if (initialHash) {
+    switchTab(`tab-${initialHash}`);
   }
 
-  // Quick CTA links inside content
+  // React to hashchange events dynamically (logo click, browser back/forward)
+  window.addEventListener("hashchange", () => {
+    const currentHash = window.location.hash.replace("#", "");
+    if (currentHash) {
+      switchTab(`tab-${currentHash}`);
+    } else {
+      switchTab("tab-overview");
+    }
+  });
+
+  // Intercept all data-navigate elements (buttons, hero links, logo)
   document.querySelectorAll("[data-navigate]").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       const targetTab = btn.getAttribute("data-navigate");
       switchTab(targetTab);
+      history.replaceState(null, "", `#${targetTab.replace("tab-", "")}`);
     });
   });
 }
@@ -139,6 +152,25 @@ function createAceternityProjectCard(p) {
     )
     .join("");
 
+  const statsHtml = p.stats
+    ? `
+      <div class="grid grid-cols-3 gap-2 p-2.5 rounded-xl bg-black/50 border border-zinc-800/80 mb-5 text-center font-mono">
+        <div>
+          <div class="text-[10px] text-zinc-500 uppercase">Tests</div>
+          <div class="text-xs font-semibold text-zinc-300 mt-0.5">${p.stats.tests || 'Verified'}</div>
+        </div>
+        <div>
+          <div class="text-[10px] text-zinc-500 uppercase">Latency</div>
+          <div class="text-xs font-semibold text-emerald-400 mt-0.5">${p.stats.speed || p.stats.ram || 'Optimal'}</div>
+        </div>
+        <div>
+          <div class="text-[10px] text-zinc-500 uppercase">Defense</div>
+          <div class="text-xs font-semibold text-zinc-300 mt-0.5">${p.stats.security || p.stats.uptime || 'Hardened'}</div>
+        </div>
+      </div>
+    `
+    : "";
+
   return `
     <div class="aceternity-card p-6 flex flex-col justify-between group" data-tags="${p.topics.join(" ")}">
       <div>
@@ -160,9 +192,11 @@ function createAceternityProjectCard(p) {
           ${p.description}
         </p>
 
-        <ul class="space-y-1.5 mb-6 p-3 rounded-xl bg-black/40 border border-zinc-800/80">
+        <ul class="space-y-1.5 mb-5 p-3 rounded-xl bg-black/40 border border-zinc-800/80">
           ${highlightsHtml}
         </ul>
+
+        ${statsHtml}
       </div>
 
       <div>
@@ -170,16 +204,16 @@ function createAceternityProjectCard(p) {
           ${tagsHtml}
         </div>
 
-        <div class="pt-4 border-t border-zinc-800 flex items-center justify-between">
-          <div class="flex items-center gap-2 text-xs text-zinc-400">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-            <span>Python</span>
-            ${p.liveUpdated ? `<span class="text-zinc-600">• ${p.liveUpdated}</span>` : ""}
+        <div class="pt-4 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2 text-xs text-zinc-400 min-w-0">
+            <span class="w-2 h-2 shrink-0 rounded-full bg-emerald-400"></span>
+            <span class="font-mono text-zinc-300 font-medium">Python</span>
+            ${p.liveUpdated ? `<span class="text-zinc-500 font-sans text-[11px] truncate">• ${p.liveUpdated}</span>` : ""}
           </div>
           <a href="${p.githubUrl}" target="_blank" rel="noopener noreferrer" 
-             class="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 hover:text-white transition border border-zinc-700">
+             class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 hover:text-white transition-all duration-200 border border-zinc-700 hover:border-zinc-500 shadow-sm">
             <span>Repository</span>
-            <span class="text-zinc-400">↗</span>
+            <span class="text-zinc-400 group-hover:translate-x-0.5 transition-transform">↗</span>
           </a>
         </div>
       </div>
@@ -222,25 +256,30 @@ function renderSkills() {
   container.innerHTML = data.skills
     .map(
       (cat) => `
-    <div class="aceternity-card p-6">
-      <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4 pb-2 border-b border-zinc-800 flex items-center justify-between">
-        <span>${cat.category}</span>
-        <span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span>
-      </h3>
-      <div class="space-y-2.5">
-        ${cat.items
-          .map(
-            (item) => `
-          <div class="flex items-center justify-between p-2 rounded-lg hover:bg-zinc-900/60 transition">
-            <div class="flex items-center gap-2.5">
-              <span class="w-1.5 h-1.5 rounded-full ${item.highlight ? "bg-white ring-2 ring-white/20" : "bg-zinc-600"}"></span>
-              <span class="text-sm font-medium ${item.highlight ? "text-white font-semibold" : "text-zinc-300"}">${item.name}</span>
+    <div class="aceternity-card p-6 flex flex-col justify-between">
+      <div>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4 pb-2 border-b border-zinc-800 flex items-center justify-between">
+          <span>${cat.category}</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span>
+        </h3>
+        <div class="space-y-3">
+          ${cat.items
+            .map(
+              (item) => `
+            <div class="p-3 rounded-xl bg-black/40 border border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-900/50 transition-all duration-200 group/item">
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="w-1.5 h-1.5 shrink-0 rounded-full ${item.highlight ? "bg-emerald-400 ring-2 ring-emerald-400/20" : "bg-zinc-600"}"></span>
+                  <span class="text-xs sm:text-sm font-semibold truncate ${item.highlight ? "text-white" : "text-zinc-200 group-hover/item:text-white"}">${item.name}</span>
+                </div>
+                ${item.highlight ? `<span class="shrink-0 text-[10px] font-mono tracking-wider uppercase px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Core</span>` : ""}
+              </div>
+              <p class="text-[11px] text-zinc-400 font-mono pl-3.5 leading-snug">${item.level}</p>
             </div>
-            <span class="text-[11px] font-mono text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">${item.level}</span>
-          </div>
-        `
-          )
-          .join("")}
+          `
+            )
+            .join("")}
+        </div>
       </div>
     </div>
   `
