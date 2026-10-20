@@ -5,15 +5,24 @@ class GitHubApiClient {
   constructor(username = "R3xo666") {
     this.username = username;
     this.cacheKey = `gh_cache_${username}`;
-    this.cacheTtlMs = 60 * 60 * 1000; // 1 hour
+    this.cacheTtlMs = 10 * 60 * 1000; // 10 minutes (responsive to newly pushed repositories)
   }
 
   async fetchRepositories() {
-    // 1. Try Cache First
-    const cached = this.getCache();
-    if (cached) {
-      console.log("[GitHubApiClient] Serving from local cache");
-      return cached;
+    // Check if user requested a fresh sync via query parameter (?refresh=1 or ?bust=1)
+    const urlParams = new URLSearchParams(window.location.search);
+    const forceRefresh = urlParams.has("refresh") || urlParams.has("bust");
+
+    // 1. Try Cache First (if not forced)
+    if (!forceRefresh) {
+      const cached = this.getCache();
+      if (cached) {
+        console.log("[GitHubApiClient] Serving from local cache");
+        return cached;
+      }
+    } else {
+      this.clearCache();
+      console.log("[GitHubApiClient] Cache invalidated via refresh request");
     }
 
     // 2. Fetch from GitHub REST API
@@ -62,6 +71,12 @@ class GitHubApiClient {
     } catch (e) {
       console.warn("[GitHubApiClient] Could not cache to localStorage", e);
     }
+  }
+
+  clearCache() {
+    try {
+      localStorage.removeItem(this.cacheKey);
+    } catch (_) {}
   }
 }
 

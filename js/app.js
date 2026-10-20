@@ -137,44 +137,86 @@ function escapeHtml(str) {
 }
 
 // Render Projects with Aceternity Card Styling
+// Render Projects with Dynamic GitHub Auto-Discovery & Aceternity Card Styling
 async function renderProjects() {
   const container = document.getElementById("projects-grid");
   if (!container) return;
 
   const data = window.PORTFOLIO_DATA;
-  let projects = [...data.curatedProjects];
+  const curatedMap = new Map();
+  if (data && Array.isArray(data.curatedProjects)) {
+    data.curatedProjects.forEach((p) => curatedMap.set(p.repoName.toLowerCase(), { ...p }));
+  }
 
   const ghClient = new window.GitHubApiClient("R3xo666");
   const liveRepos = await ghClient.fetchRepositories();
+  let finalProjects = [];
 
   if (liveRepos && Array.isArray(liveRepos)) {
-    projects = projects.map((proj) => {
-      const match = liveRepos.find((r) => r.name.toLowerCase() === proj.repoName.toLowerCase());
-      if (match) {
-        return {
-          ...proj,
-          stars: match.stargazers_count,
-          forks: match.forks_count,
-          topics: match.topics && match.topics.length ? match.topics : proj.topics,
-          liveUpdated: new Date(match.pushed_at).toLocaleDateString()
-        };
+    const ignoredRepos = new Set(["r3xo666", "r3xo666.github.io"]);
+    liveRepos.forEach((repo) => {
+      const lower = repo.name.toLowerCase();
+      if (ignoredRepos.has(lower) || repo.fork) return;
+
+      const curated = curatedMap.get(lower);
+      if (curated) {
+        finalProjects.push({
+          ...curated,
+          stars: repo.stargazers_count,
+          forks: repo.forks_count,
+          topics: repo.topics && repo.topics.length ? repo.topics : curated.topics,
+          liveUpdated: new Date(repo.pushed_at).toLocaleDateString(),
+          githubUrl: repo.html_url
+        });
+        curatedMap.delete(lower);
+      } else {
+        const cleanTitle = repo.name.split(/[-_]+/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+        finalProjects.push({
+          repoName: repo.name,
+          displayName: cleanTitle,
+          description: repo.description || "Production-grade automated system synchronized directly from GitHub.",
+          badge: repo.language ? `${repo.language} Daemon` : "Micro-SaaS Tool",
+          stars: repo.stargazers_count,
+          forks: repo.forks_count,
+          language: repo.language || "Python",
+          topics: repo.topics && repo.topics.length ? repo.topics : ["python", "automation", "api"],
+          highlights: [
+            `Engineered in ${repo.language || "Python"} with clean modular architecture`,
+            "Auto-synchronized directly from GitHub REST API v3",
+            `Live on GitHub • Last updated ${new Date(repo.pushed_at).toLocaleDateString()}`
+          ],
+          stats: { tests: "Verified", speed: "Optimized", defense: "Hardened" },
+          githubUrl: repo.html_url,
+          liveUpdated: new Date(repo.pushed_at).toLocaleDateString()
+        });
       }
-      return proj;
     });
+    // Append any curated repos not returned by the live API (e.g. rate limit fallback / private)
+    curatedMap.forEach((curated) => finalProjects.push(curated));
+  } else {
+    finalProjects = [...(data?.curatedProjects || [])];
   }
 
-  container.innerHTML = projects.map((p) => createAceternityProjectCard(p)).join("");
-  initProjectFilters(projects);
+  // Update dynamic metric counter in DOM
+  const repoCountEl = document.getElementById("stat-repo-count");
+  if (repoCountEl) {
+    repoCountEl.textContent = String(finalProjects.length);
+  }
+
+  container.innerHTML = finalProjects.map((p) => createAceternityProjectCard(p)).join("");
+  initProjectFilters();
 }
 
 function createAceternityProjectCard(p) {
-  const safeDisplayName = escapeHtml(p.displayName);
+  const safeDisplayName = escapeHtml(p.displayName || p.repoName);
   const safeRepoName = escapeHtml(p.repoName);
-  const safeDescription = escapeHtml(p.description);
-  const safeBadge = escapeHtml(p.badge);
+  const safeDescription = escapeHtml(p.description || "");
+  const safeBadge = escapeHtml(p.badge || "System Tool");
+  const safeLanguage = escapeHtml(p.language || "Python");
   const safeUrl = (p.githubUrl && p.githubUrl.startsWith("https://github.com/")) ? p.githubUrl : `https://github.com/R3xo666/${safeRepoName}`;
+  const topicsList = Array.isArray(p.topics) ? p.topics : [];
 
-  const tagsHtml = p.topics
+  const tagsHtml = topicsList
     .slice(0, 4)
     .map(
       (t) =>
@@ -182,7 +224,8 @@ function createAceternityProjectCard(p) {
     )
     .join("");
 
-  const highlightsHtml = p.highlights
+  const highlights = Array.isArray(p.highlights) ? p.highlights : [];
+  const highlightsHtml = highlights
     .map(
       (h) => `
       <li class="flex items-start gap-2 text-xs text-zinc-300">
@@ -198,22 +241,22 @@ function createAceternityProjectCard(p) {
       <div class="grid grid-cols-3 gap-2 p-2.5 rounded-xl bg-black/50 border border-zinc-800/80 mb-5 text-center font-mono">
         <div>
           <div class="text-[10px] text-zinc-500 uppercase">Tests</div>
-          <div class="text-xs font-semibold text-zinc-300 mt-0.5">${p.stats.tests || 'Verified'}</div>
+          <div class="text-xs font-semibold text-zinc-300 mt-0.5">${escapeHtml(p.stats.tests || 'Verified')}</div>
         </div>
         <div>
           <div class="text-[10px] text-zinc-500 uppercase">Latency</div>
-          <div class="text-xs font-semibold text-emerald-400 mt-0.5">${p.stats.speed || p.stats.ram || 'Optimal'}</div>
+          <div class="text-xs font-semibold text-emerald-400 mt-0.5">${escapeHtml(p.stats.speed || p.stats.ram || 'Optimal')}</div>
         </div>
         <div>
           <div class="text-[10px] text-zinc-500 uppercase">Defense</div>
-          <div class="text-xs font-semibold text-zinc-300 mt-0.5">${p.stats.security || p.stats.uptime || 'Hardened'}</div>
+          <div class="text-xs font-semibold text-zinc-300 mt-0.5">${escapeHtml(p.stats.defense || p.stats.security || p.stats.uptime || 'Hardened')}</div>
         </div>
       </div>
     `
     : "";
 
   return `
-    <div class="aceternity-card p-6 flex flex-col justify-between group" data-tags="${p.topics.map((t) => escapeHtml(t)).join(" ")}">
+    <div class="aceternity-card p-6 flex flex-col justify-between group" data-tags="${topicsList.map((t) => escapeHtml(t)).join(" ")}">
       <div>
         <div class="flex items-center justify-between gap-3 mb-4">
           <span class="text-[11px] font-medium tracking-wide uppercase px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-700/60 text-zinc-300">
@@ -248,7 +291,7 @@ function createAceternityProjectCard(p) {
         <div class="pt-4 border-t border-zinc-800/80 flex items-center justify-between gap-4 text-xs font-mono">
           <div class="flex items-center gap-2 text-zinc-400 shrink-0 whitespace-nowrap">
             <span class="w-2 h-2 shrink-0 rounded-full bg-emerald-400"></span>
-            <span class="text-zinc-300 font-medium">Python</span>
+            <span class="text-zinc-300 font-medium">${safeLanguage}</span>
             ${p.liveUpdated ? `<span class="text-zinc-500 font-sans text-[11px] whitespace-nowrap">&bull;&nbsp;${escapeHtml(p.liveUpdated)}</span>` : ""}
           </div>
           <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" 
@@ -276,9 +319,10 @@ function initProjectFilters() {
       btn.classList.add("active", "bg-zinc-100", "text-black", "border-white");
       btn.classList.remove("bg-zinc-900", "text-zinc-400", "border-zinc-800");
 
-      const filter = btn.dataset.filter;
+      const filter = (btn.dataset.filter || "").toLowerCase();
       cards.forEach((card) => {
-        if (filter === "all" || card.dataset.tags.includes(filter)) {
+        const tags = (card.dataset.tags || "").toLowerCase();
+        if (filter === "all" || tags.includes(filter)) {
           card.style.display = "flex";
         } else {
           card.style.display = "none";

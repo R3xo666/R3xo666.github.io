@@ -113,6 +113,27 @@ const PORTFOLIO_DATA = {
         "Polite crawling jitter window to prevent IP bans",
         "SIGINT signal trap prevents data loss upon Ctrl+C"
       ]
+    },
+    {
+      repoName: "shopify-sentinel-restock-daemon",
+      displayName: "Shopify Sentinel",
+      tagline: "Autonomous Real-Time Restock & Price Drop Discord Alert Daemon",
+      description: "Sub-100ms Shopify catalog poller querying public JSON endpoints. Tracks variant-level inventory changes in an atomic SQLite WAL state machine, suppresses boot alert storms, and dispatches WCAG-compliant 1-click buy Discord embeds.",
+      stars: 0,
+      language: "Python",
+      topics: ["python", "asyncio", "shopify", "discord-bot", "sqlite", "automation"],
+      badge: "Inventory Daemon",
+      stats: {
+        tests: "16 Passed",
+        speed: "<100ms/Poll",
+        defense: "CWE-918 Guard"
+      },
+      githubUrl: "https://github.com/R3xo666/shopify-sentinel-restock-daemon",
+      highlights: [
+        "Sub-100ms native Shopify JSON endpoints (zero browser overhead)",
+        "SQLite WAL state machine with startup warmup alert suppression",
+        "OWASP CWE-918 SSRF defense & 1-click cart checkout embeds"
+      ]
     }
   ]
 };
