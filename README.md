@@ -46,8 +46,8 @@ Open [http://localhost:8000](http://localhost:8000) in your browser.
 ## 📬 Contact & Links
 
 - **GitHub:** [@R3xo666](https://github.com/R3xo666)
-- **Telegram:** [@R3xo666](https://t.me/R3xo666)
-- **Email:** contact.r3xo666@gmail.com
+- **Discord:** `dattebayoo.bat`
+- **Email:** demon556thedeath@gmail.com
 
 ---
 

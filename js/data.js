@@ -12,9 +12,8 @@ const PORTFOLIO_DATA = {
     bio: "Engineering robust micro-SaaS data pipelines, document extractors, and 24/7 background monitors. Combining rapid AI velocity with deep software engineering rigors.",
     socials: {
       github: "https://github.com/R3xo666",
-      telegram: "https://t.me/R3xo666",
-      discord: "r3xo666",
-      email: "contact.r3xo666@gmail.com"
+      discord: "dattebayoo.bat",
+      email: "demon556thedeath@gmail.com"
     }
   },
 
