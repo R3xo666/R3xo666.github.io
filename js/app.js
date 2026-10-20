@@ -48,37 +48,71 @@ function initAntigravityBackground() {
     isMouseActive = false;
   });
 
-  // Particle configuration (Antigravity glowing cosmic points & soft cloud nodes)
-  const particles = [];
-  const particleCount = Math.min(130, Math.floor((width * height) / 11000));
+  // Python syntax fragments pool (subtle, tiny, aesthetic tokens)
+  const PYTHON_TOKENS = [
+    ".copy()",
+    ".vibe()",
+    ".if()",
+    "print()",
+    "async def",
+    "await",
+    "yield",
+    "@property",
+    "lambda x:",
+    "self._init",
+    "[x for x in]",
+    "None",
+    "True",
+    "False",
+    "pass",
+    "import os",
+    "try:",
+    "except:",
+    "__call__",
+    "with ctx:",
+    ":>",
+    "R3xo",
+    "len(data)",
+    ".pop(0)",
+    "dict(zip)",
+    ".keys()",
+    "-> None",
+    "return res"
+  ];
 
-  class AntigravityParticle {
+  // Particle configuration (Floating Python Syntax Nodes)
+  const particles = [];
+  const particleCount = Math.min(55, Math.floor((width * height) / 24000));
+
+  class AntigravitySyntaxParticle {
     constructor() {
       this.reset(true);
     }
 
     reset(initial = false) {
-      this.x = initial ? Math.random() * width : Math.random() > 0.5 ? -10 : width + 10;
+      this.x = initial ? Math.random() * width : Math.random() > 0.5 ? -40 : width + 40;
       this.y = initial ? Math.random() * height : Math.random() * height;
       this.baseX = this.x;
       this.baseY = this.y;
 
       // Subtle float speed
-      this.vx = (Math.random() - 0.5) * 0.45;
-      this.vy = (Math.random() - 0.5) * 0.45;
+      this.vx = (Math.random() - 0.5) * 0.35;
+      this.vy = (Math.random() - 0.5) * 0.35;
 
-      // Antigravity style: subtle soft radius, glowing nodes
-      this.radius = Math.random() * 2.2 + 1.2;
-      this.maxDist = 140; // interaction reach
-      this.alpha = Math.random() * 0.55 + 0.25;
+      // Random Python token
+      this.text = PYTHON_TOKENS[Math.floor(Math.random() * PYTHON_TOKENS.length)];
+      // Very compact, readable mono font size (9px - 11px)
+      this.fontSize = Math.floor(Math.random() * 3) + 9;
+      this.maxDist = 130; // interaction reach
+      this.alpha = Math.random() * 0.35 + 0.22;
 
-      // Palette: Sky blue, Electric Indigo, Emerald mint, Clean White
+      // Palette: Sky blue, Electric Indigo, Emerald mint, Subtle Zinc
       const palettes = [
         { r: 56, g: 189, b: 248 },   // sky-400
-        { r: 99, g: 102, b: 241 },   // indigo-500
-        { r: 168, g: 85, b: 247 },   // purple-500
+        { r: 99, g: 102, b: 241 },   // indigo-400
         { r: 52, g: 211, b: 153 },   // emerald-400
-        { r: 244, g: 244, b: 245 }    // zinc-100
+        { r: 168, g: 85, b: 247 },   // purple-400
+        { r: 212, g: 212, b: 216 }   // zinc-300
       ];
       this.color = palettes[Math.floor(Math.random() * palettes.length)];
       this.pulseSpeed = Math.random() * 0.02 + 0.01;
@@ -91,19 +125,19 @@ function initAntigravityBackground() {
       this.y += this.vy;
 
       // Bounce gracefully off canvas bounds (Bounced Surface)
-      if (this.x < 0) {
-        this.x = 0;
-        this.vx *= -1;
-      } else if (this.x > width) {
-        this.x = width;
-        this.vx *= -1;
+      if (this.x < 10) {
+        this.x = 10;
+        this.vx = Math.abs(this.vx);
+      } else if (this.x > width - 50) {
+        this.x = width - 50;
+        this.vx = -Math.abs(this.vx);
       }
-      if (this.y < 0) {
-        this.y = 0;
-        this.vy *= -1;
-      } else if (this.y > height) {
-        this.y = height;
-        this.vy *= -1;
+      if (this.y < 20) {
+        this.y = 20;
+        this.vy = Math.abs(this.vy);
+      } else if (this.y > height - 20) {
+        this.y = height - 20;
+        this.vy = -Math.abs(this.vy);
       }
 
       // Gravitational bounce & repulsion around cursor
@@ -113,7 +147,7 @@ function initAntigravityBackground() {
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < this.maxDist && dist > 0) {
-          const force = (1 - dist / this.maxDist) * 3.5;
+          const force = (1 - dist / this.maxDist) * 3.2;
           const angle = Math.atan2(dy, dx);
           // Push away with soft damped elasticity
           this.x -= Math.cos(angle) * force;
@@ -125,24 +159,24 @@ function initAntigravityBackground() {
     }
 
     draw() {
-      const currentAlpha = Math.max(0.1, this.alpha + Math.sin(this.pulse) * 0.2);
+      const currentAlpha = Math.max(0.12, this.alpha + Math.sin(this.pulse) * 0.14);
       ctx.save();
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.font = `${this.fontSize}px 'JetBrains Mono', 'Fira Code', monospace`;
       ctx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${currentAlpha})`;
-      // Soft bloom halo for Antigravity aesthetic
-      ctx.shadowColor = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, 0.8)`;
-      ctx.shadowBlur = 8;
-      ctx.fill();
+      
+      // Soft ambient glow around code syntax
+      ctx.shadowColor = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, 0.7)`;
+      ctx.shadowBlur = 6;
+      ctx.fillText(this.text, this.x, this.y);
       ctx.restore();
     }
   }
 
   function initParticles() {
     particles.length = 0;
-    const count = Math.min(130, Math.floor((width * height) / 11000));
+    const count = Math.min(55, Math.floor((width * height) / 24000));
     for (let i = 0; i < count; i++) {
-      particles.push(new AntigravityParticle());
+      particles.push(new AntigravitySyntaxParticle());
     }
   }
   initParticles();
@@ -159,7 +193,7 @@ function initAntigravityBackground() {
       cloud.style.transform = `translate(${currentX}px, ${currentY}px) translate(-50%, -50%)`;
     }
 
-    // Connect close neighboring particles with atmospheric subtle lines
+    // Connect close neighboring syntax particles with atmospheric subtle lines
     const len = particles.length;
     for (let i = 0; i < len; i++) {
       const p1 = particles[i];
@@ -172,13 +206,13 @@ function initAntigravityBackground() {
         const dy = p1.y - p2.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (dist < 90) {
-          const lineAlpha = (1 - dist / 90) * 0.16;
+        if (dist < 110) {
+          const lineAlpha = (1 - dist / 110) * 0.12;
           ctx.beginPath();
-          ctx.moveTo(p1.x, p1.y);
-          ctx.lineTo(p2.x, p2.y);
+          ctx.moveTo(p1.x, p1.y - 4);
+          ctx.lineTo(p2.x, p2.y - 4);
           ctx.strokeStyle = `rgba(147, 197, 253, ${lineAlpha})`;
-          ctx.lineWidth = 0.75;
+          ctx.lineWidth = 0.65;
           ctx.stroke();
         }
       }
