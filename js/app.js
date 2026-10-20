@@ -748,6 +748,10 @@ function createAceternityReviewCard(r) {
   const rating = Math.min(5, Math.max(1, Number(r.rating) || 5));
   const starsHtml = "★".repeat(rating) + "☆".repeat(5 - rating);
 
+  // Compute clean avatar letter before HTML entity encoding
+  const rawAuthorClean = String(r.author || "A").trim().replace(/^['"@\s]+/, "");
+  const avatarLetter = escapeHtml((rawAuthorClean.charAt(0) || "A").toUpperCase());
+
   let typeBadgeLabel = "Peer Endorsement";
   let typeBadgeColor = "text-zinc-400 bg-zinc-900 border-zinc-800";
   if (safeType === "private_service") {
@@ -801,7 +805,7 @@ function createAceternityReviewCard(r) {
       <div class="pt-4 mt-4 border-t border-zinc-800/80 flex items-center justify-between gap-3 text-xs">
         <div class="flex items-center gap-2.5 min-w-0">
           <div class="w-7 h-7 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 font-mono text-[11px] font-bold shrink-0">
-            ${safeAuthor.charAt(0).toUpperCase()}
+            ${avatarLetter}
           </div>
           <div class="min-w-0">
             <div class="font-semibold text-white truncate text-xs flex items-center gap-1.5">
@@ -1271,7 +1275,8 @@ ${rawTelemetry ? `- **Outcome / Metric**: ${rawTelemetry}` : ""}
     const sanitize = (str) => {
       if (!str) return "";
       let s = str.trim();
-      if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+      // Neutralize formula injection for dangerous spreadsheet formulas (=, +, - followed by text/numbers)
+      if (/^[=+\-\t\r]/.test(s)) s = "'" + s;
       return s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "");
     };
 
