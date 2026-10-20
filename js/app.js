@@ -688,8 +688,9 @@ async function getDeviceFingerprint() {
 function isDeviceReviewBlocked(fingerprint) {
   try {
     const submittedFps = JSON.parse(localStorage.getItem("r3xo_submitted_fingerprints") || "[]");
-    if (submittedFps.includes(fingerprint)) return true;
+    if (fingerprint && submittedFps.includes(fingerprint)) return true;
     if (localStorage.getItem("r3xo_review_submitted")) return true;
+    if (sessionStorage.getItem("r3xo_review_submitted")) return true;
     if (document.cookie.includes("r3xo_rev_lock=1")) return true;
   } catch (_) {}
   return false;
@@ -698,11 +699,12 @@ function isDeviceReviewBlocked(fingerprint) {
 function markDeviceReviewSubmitted(fingerprint) {
   try {
     const submittedFps = JSON.parse(localStorage.getItem("r3xo_submitted_fingerprints") || "[]");
-    if (!submittedFps.includes(fingerprint)) {
+    if (fingerprint && !submittedFps.includes(fingerprint)) {
       submittedFps.push(fingerprint);
       localStorage.setItem("r3xo_submitted_fingerprints", JSON.stringify(submittedFps));
     }
     localStorage.setItem("r3xo_review_submitted", "true");
+    sessionStorage.setItem("r3xo_review_submitted", "true");
     document.cookie = "r3xo_rev_lock=1; path=/; max-age=31536000; SameSite=Strict";
   } catch (_) {}
 }
@@ -817,9 +819,11 @@ function createAceternityReviewCard(r) {
 
 function initReviewFilters() {
   const filterBtns = document.querySelectorAll(".review-filter-btn");
-  const cards = document.querySelectorAll("#reviews-grid > div");
 
   filterBtns.forEach((btn) => {
+    if (btn._hasReviewFilterListener) return;
+    btn._hasReviewFilterListener = true;
+
     btn.addEventListener("click", () => {
       filterBtns.forEach((b) => {
         b.classList.remove("active", "bg-zinc-100", "text-black", "border-white");
@@ -829,6 +833,7 @@ function initReviewFilters() {
       btn.classList.remove("bg-zinc-900", "text-zinc-400", "border-zinc-800");
 
       const filter = (btn.dataset.reviewFilter || "all").toLowerCase();
+      const cards = document.querySelectorAll("#reviews-grid > div");
       cards.forEach((card) => {
         const type = (card.dataset.reviewType || "").toLowerCase();
         if (filter === "all" || type === filter) {
