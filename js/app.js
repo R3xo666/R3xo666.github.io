@@ -3,7 +3,7 @@
  */
 
 document.addEventListener("DOMContentLoaded", () => {
-  initAceternitySpotlight();
+  initAntigravityBackground();
   initNavigation();
   renderProjects();
   renderSkills();
@@ -13,25 +13,177 @@ document.addEventListener("DOMContentLoaded", () => {
   initTerminalSimulation();
 });
 
-// Aceternity Smooth Spotlight Effect
-function initAceternitySpotlight() {
-  const glow = document.getElementById("aceternity-spotlight");
-  if (!glow) return;
+// Antigravity Atmospheric Mesh & Interactive Bounced Surface Canvas
+function initAntigravityBackground() {
+  const canvas = document.getElementById("antigravity-canvas");
+  const cloud = document.getElementById("antigravity-cloud");
+  if (!canvas) return;
 
-  let mouseX = window.innerWidth / 2;
-  let mouseY = window.innerHeight / 2;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  let width = (canvas.width = window.innerWidth);
+  let height = (canvas.height = window.innerHeight);
+
+  let mouseX = width / 2;
+  let mouseY = height / 2;
   let currentX = mouseX;
   let currentY = mouseY;
+  let isMouseActive = false;
+
+  const handleResize = () => {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    initParticles();
+  };
+  window.addEventListener("resize", handleResize);
 
   window.addEventListener("mousemove", (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
+    isMouseActive = true;
   });
 
+  document.addEventListener("mouseleave", () => {
+    isMouseActive = false;
+  });
+
+  // Particle configuration (Antigravity glowing cosmic points & soft cloud nodes)
+  const particles = [];
+  const particleCount = Math.min(130, Math.floor((width * height) / 11000));
+
+  class AntigravityParticle {
+    constructor() {
+      this.reset(true);
+    }
+
+    reset(initial = false) {
+      this.x = initial ? Math.random() * width : Math.random() > 0.5 ? -10 : width + 10;
+      this.y = initial ? Math.random() * height : Math.random() * height;
+      this.baseX = this.x;
+      this.baseY = this.y;
+
+      // Subtle float speed
+      this.vx = (Math.random() - 0.5) * 0.45;
+      this.vy = (Math.random() - 0.5) * 0.45;
+
+      // Antigravity style: subtle soft radius, glowing nodes
+      this.radius = Math.random() * 2.2 + 1.2;
+      this.maxDist = 140; // interaction reach
+      this.alpha = Math.random() * 0.55 + 0.25;
+
+      // Palette: Sky blue, Electric Indigo, Emerald mint, Clean White
+      const palettes = [
+        { r: 56, g: 189, b: 248 },   // sky-400
+        { r: 99, g: 102, b: 241 },   // indigo-500
+        { r: 168, g: 85, b: 247 },   // purple-500
+        { r: 52, g: 211, b: 153 },   // emerald-400
+        { r: 244, g: 244, b: 245 }    // zinc-100
+      ];
+      this.color = palettes[Math.floor(Math.random() * palettes.length)];
+      this.pulseSpeed = Math.random() * 0.02 + 0.01;
+      this.pulse = Math.random() * Math.PI;
+    }
+
+    update(targetX, targetY) {
+      // Natural float drift
+      this.x += this.vx;
+      this.y += this.vy;
+
+      // Bounce gracefully off canvas bounds (Bounced Surface)
+      if (this.x < 0) {
+        this.x = 0;
+        this.vx *= -1;
+      } else if (this.x > width) {
+        this.x = width;
+        this.vx *= -1;
+      }
+      if (this.y < 0) {
+        this.y = 0;
+        this.vy *= -1;
+      } else if (this.y > height) {
+        this.y = height;
+        this.vy *= -1;
+      }
+
+      // Gravitational bounce & repulsion around cursor
+      if (isMouseActive) {
+        const dx = targetX - this.x;
+        const dy = targetY - this.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < this.maxDist && dist > 0) {
+          const force = (1 - dist / this.maxDist) * 3.5;
+          const angle = Math.atan2(dy, dx);
+          // Push away with soft damped elasticity
+          this.x -= Math.cos(angle) * force;
+          this.y -= Math.sin(angle) * force;
+        }
+      }
+
+      this.pulse += this.pulseSpeed;
+    }
+
+    draw() {
+      const currentAlpha = Math.max(0.1, this.alpha + Math.sin(this.pulse) * 0.2);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${currentAlpha})`;
+      // Soft bloom halo for Antigravity aesthetic
+      ctx.shadowColor = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, 0.8)`;
+      ctx.shadowBlur = 8;
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function initParticles() {
+    particles.length = 0;
+    const count = Math.min(130, Math.floor((width * height) / 11000));
+    for (let i = 0; i < count; i++) {
+      particles.push(new AntigravityParticle());
+    }
+  }
+  initParticles();
+
+  // Animation frame loop
   function animate() {
-    currentX += (mouseX - currentX) * 0.1;
-    currentY += (mouseY - currentY) * 0.1;
-    glow.style.transform = `translate(${currentX}px, ${currentY}px) translate(-50%, -50%)`;
+    ctx.clearRect(0, 0, width, height);
+
+    // Smooth cursor trailing for soft nebula cloud and particle gravity
+    currentX += (mouseX - currentX) * 0.08;
+    currentY += (mouseY - currentY) * 0.08;
+
+    if (cloud) {
+      cloud.style.transform = `translate(${currentX}px, ${currentY}px) translate(-50%, -50%)`;
+    }
+
+    // Connect close neighboring particles with atmospheric subtle lines
+    const len = particles.length;
+    for (let i = 0; i < len; i++) {
+      const p1 = particles[i];
+      p1.update(currentX, currentY);
+      p1.draw();
+
+      for (let j = i + 1; j < len; j++) {
+        const p2 = particles[j];
+        const dx = p1.x - p2.x;
+        const dy = p1.y - p2.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < 90) {
+          const lineAlpha = (1 - dist / 90) * 0.16;
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.strokeStyle = `rgba(147, 197, 253, ${lineAlpha})`;
+          ctx.lineWidth = 0.75;
+          ctx.stroke();
+        }
+      }
+    }
+
     requestAnimationFrame(animate);
   }
   animate();
