@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
   initNavigation();
   renderProjects();
   renderSkills();
+  renderReviews();
+  initReviewModal();
   initInteractiveUtils();
   initTerminalSimulation();
 });
@@ -622,3 +624,747 @@ function initTerminalSimulation() {
     `;
   });
 }
+
+// ==================== Hardware & Canvas Device Fingerprint Engine ====================
+async function getDeviceFingerprint() {
+  const parts = [];
+
+  // 1. WebGL GPU Chipset & Vendor Signature
+  try {
+    const canvas = document.createElement("canvas");
+    const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+    if (gl) {
+      const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+      if (debugInfo) {
+        parts.push(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+        parts.push(gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
+      }
+    }
+  } catch (_) {}
+
+  // 2. HTML5 Canvas 2D Text Rasterization Signature
+  try {
+    const canvas = document.createElement("canvas");
+    canvas.width = 200;
+    canvas.height = 40;
+    const ctx = canvas.getContext("2d");
+    ctx.textBaseline = "top";
+    ctx.font = "14px monospace";
+    ctx.fillStyle = "#34d399";
+    ctx.fillRect(10, 10, 80, 20);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText("R3xo666-Review-Auth-v1", 4, 12);
+    parts.push(canvas.toDataURL());
+  } catch (_) {}
+
+  // 3. Hardware Concurrency, Display Profile & Timezone
+  try {
+    parts.push(navigator.hardwareConcurrency || 4);
+    parts.push(screen.colorDepth || 24);
+    parts.push(`${screen.width}x${screen.height}`);
+    parts.push(Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC");
+  } catch (_) {}
+
+  const rawStr = parts.join("::");
+  if (window.crypto && window.crypto.subtle) {
+    try {
+      const buffer = new TextEncoder().encode(rawStr);
+      const hashBuf = await window.crypto.subtle.digest("SHA-256", buffer);
+      return Array.from(new Uint8Array(hashBuf))
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+    } catch (_) {}
+  }
+
+  // Fallback deterministic string hash
+  let hash = 0;
+  for (let i = 0; i < rawStr.length; i++) {
+    hash = (hash << 5) - hash + rawStr.charCodeAt(i);
+    hash |= 0;
+  }
+  return "fp_" + Math.abs(hash).toString(16);
+}
+
+function isDeviceReviewBlocked(fingerprint) {
+  try {
+    const submittedFps = JSON.parse(localStorage.getItem("r3xo_submitted_fingerprints") || "[]");
+    if (submittedFps.includes(fingerprint)) return true;
+    if (localStorage.getItem("r3xo_review_submitted")) return true;
+    if (document.cookie.includes("r3xo_rev_lock=1")) return true;
+  } catch (_) {}
+  return false;
+}
+
+function markDeviceReviewSubmitted(fingerprint) {
+  try {
+    const submittedFps = JSON.parse(localStorage.getItem("r3xo_submitted_fingerprints") || "[]");
+    if (!submittedFps.includes(fingerprint)) {
+      submittedFps.push(fingerprint);
+      localStorage.setItem("r3xo_submitted_fingerprints", JSON.stringify(submittedFps));
+    }
+    localStorage.setItem("r3xo_review_submitted", "true");
+    document.cookie = "r3xo_rev_lock=1; path=/; max-age=31536000; SameSite=Strict";
+  } catch (_) {}
+}
+
+// ==================== Render Reviews & Filtering ====================
+function renderReviews() {
+  const container = document.getElementById("reviews-grid");
+  if (!container) return;
+
+  const data = window.PORTFOLIO_DATA;
+  let reviews = [];
+  if (data && Array.isArray(data.reviews)) {
+    reviews = [...data.reviews];
+  }
+
+  // Merge any optimistic local reviews from this device
+  try {
+    const local = JSON.parse(localStorage.getItem("r3xo_local_reviews") || "[]");
+    if (Array.isArray(local) && local.length > 0) {
+      reviews = [...local, ...reviews];
+    }
+  } catch (_) {}
+
+  const countEl = document.getElementById("stat-review-count");
+  if (countEl) {
+    countEl.textContent = String(reviews.length);
+  }
+
+  container.innerHTML = reviews.map((r) => createAceternityReviewCard(r)).join("");
+  initReviewFilters();
+}
+
+function createAceternityReviewCard(r) {
+  const safeAuthor = escapeHtml(r.author || "Anonymous Engineer");
+  const safeRole = escapeHtml(r.role || "Collaborator");
+  const safeHandle = r.handle ? escapeHtml(r.handle) : "";
+  const safeProjectName = r.projectName ? escapeHtml(r.projectName) : "";
+  const safeContent = escapeHtml(r.content || "");
+  const safeDate = escapeHtml(r.date || "Recent");
+  const safeType = r.type || "independent";
+  const rating = Math.min(5, Math.max(1, Number(r.rating) || 5));
+  const starsHtml = "★".repeat(rating) + "☆".repeat(5 - rating);
+
+  let typeBadgeLabel = "Peer Endorsement";
+  let typeBadgeColor = "text-zinc-400 bg-zinc-900 border-zinc-800";
+  if (safeType === "private_service") {
+    typeBadgeLabel = "Client Contract";
+    typeBadgeColor = "text-emerald-400 bg-emerald-950/40 border-emerald-800/40";
+  } else if (safeType === "public_repo") {
+    typeBadgeLabel = "Open-Source Tool";
+    typeBadgeColor = "text-sky-400 bg-sky-950/40 border-sky-800/40";
+  }
+
+  const isLocalOptimistic = r.isLocalOptimistic;
+
+  const telemetryHtml = r.telemetry
+    ? `
+      <div class="mt-4 p-2.5 rounded-xl bg-black/50 border border-zinc-800/80 flex items-center justify-between text-xs font-mono">
+        <div class="flex items-center gap-2">
+          <span class="text-zinc-500 uppercase text-[10px]">${escapeHtml(r.telemetry.metric || "Key Metric")}</span>
+          <span class="text-emerald-400 font-semibold">${escapeHtml(r.telemetry.value || "Verified")}</span>
+        </div>
+        <span class="text-[10px] text-zinc-400 px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800">${escapeHtml(r.telemetry.badge || "Verified")}</span>
+      </div>
+    `
+    : "";
+
+  return `
+    <div class="aceternity-card p-6 flex flex-col justify-between group" data-review-type="${escapeHtml(safeType)}">
+      <div>
+        <div class="flex items-start justify-between gap-3 mb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-amber-400 tracking-wider text-sm font-sans">${starsHtml}</span>
+              <span class="text-xs font-mono text-zinc-500">${rating}.0</span>
+            </div>
+            ${safeProjectName ? `<div class="text-[11px] font-mono text-zinc-400 mt-1 flex items-center gap-1.5"><span class="text-zinc-600">/</span><span>${safeProjectName}</span></div>` : ""}
+          </div>
+          <div class="flex flex-col items-end gap-1.5 shrink-0">
+            <span class="text-[10px] font-mono uppercase tracking-wide px-2.5 py-0.5 rounded-full border ${typeBadgeColor}">
+              ${typeBadgeLabel}
+            </span>
+            ${isLocalOptimistic ? `<span class="text-[10px] font-mono text-amber-400 animate-pulse">● Pending Sync</span>` : `<span class="text-[10px] font-mono text-emerald-400">✓ Verified</span>`}
+          </div>
+        </div>
+
+        <p class="text-xs sm:text-sm text-zinc-300 leading-relaxed font-sans mb-4">
+          "${safeContent}"
+        </p>
+
+        ${telemetryHtml}
+      </div>
+
+      <div class="pt-4 mt-4 border-t border-zinc-800/80 flex items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-7 h-7 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 font-mono text-[11px] font-bold shrink-0">
+            ${safeAuthor.charAt(0).toUpperCase()}
+          </div>
+          <div class="min-w-0">
+            <div class="font-semibold text-white truncate text-xs flex items-center gap-1.5">
+              <span>${safeAuthor}</span>
+              ${safeHandle ? `<span class="text-zinc-500 font-mono text-[10px] font-normal truncate">${safeHandle}</span>` : ""}
+            </div>
+            <div class="text-[10px] text-zinc-500 truncate">${safeRole}</div>
+          </div>
+        </div>
+        <span class="text-[10px] font-mono text-zinc-500 shrink-0">${safeDate}</span>
+      </div>
+    </div>
+  `;
+}
+
+function initReviewFilters() {
+  const filterBtns = document.querySelectorAll(".review-filter-btn");
+  const cards = document.querySelectorAll("#reviews-grid > div");
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      filterBtns.forEach((b) => {
+        b.classList.remove("active", "bg-zinc-100", "text-black", "border-white");
+        b.classList.add("bg-zinc-900", "text-zinc-400", "border-zinc-800");
+      });
+      btn.classList.add("active", "bg-zinc-100", "text-black", "border-white");
+      btn.classList.remove("bg-zinc-900", "text-zinc-400", "border-zinc-800");
+
+      const filter = (btn.dataset.reviewFilter || "all").toLowerCase();
+      cards.forEach((card) => {
+        const type = (card.dataset.reviewType || "").toLowerCase();
+        if (filter === "all" || type === filter) {
+          card.style.display = "flex";
+        } else {
+          card.style.display = "none";
+        }
+      });
+    });
+  });
+}
+
+// ==================== Interactive Review Modal State Machine ====================
+function initReviewModal() {
+  const modal = document.getElementById("modal-review");
+  const discardModal = document.getElementById("modal-discard");
+  const openBtn = document.getElementById("btn-open-review-modal");
+  const closeBtn = document.getElementById("btn-close-review-modal");
+
+  const step1 = document.getElementById("review-step-1");
+  const step2 = document.getElementById("review-step-2");
+  const step3 = document.getElementById("review-step-3");
+
+  const backToStep1Btn = document.getElementById("btn-back-to-step1");
+  const backFromStep3Btn = document.getElementById("btn-back-from-step3");
+
+  const typeCards = document.querySelectorAll(".review-type-card");
+  const selectedTypeBadge = document.getElementById("selected-type-badge");
+  const selectedRepoBadge = document.getElementById("selected-repo-badge");
+
+  const repoListContainer = document.getElementById("modal-repo-list");
+  const repoSearchInput = document.getElementById("input-repo-search");
+  const repoFilterTabs = document.querySelectorAll(".repo-filter-tab");
+
+  const reviewForm = document.getElementById("review-form");
+  const authorInput = document.getElementById("review-author");
+  const roleInput = document.getElementById("review-role");
+  const telemetryInput = document.getElementById("review-telemetry");
+  const contentInput = document.getElementById("review-content");
+  const charCountEl = document.getElementById("review-char-count");
+  const botTrap = document.getElementById("trap-review-bot");
+
+  const starBtns = document.querySelectorAll(".star-btn");
+  const ratingLabel = document.getElementById("rating-label");
+
+  const submitGhBtn = document.getElementById("btn-submit-github");
+  const submitWebBtn = document.getElementById("btn-submit-website");
+
+  const discardCancelBtn = document.getElementById("btn-discard-cancel");
+  const discardConfirmBtn = document.getElementById("btn-discard-confirm");
+
+  if (!modal || !openBtn) return;
+
+  // State
+  let currentStep = 1;
+  let selectedType = "independent";
+  let selectedRepo = null;
+  let currentRating = 5;
+  let cachedLiveRepos = [];
+  let formOpenTime = 0;
+  let firstKeystrokeTime = 0;
+
+  function showStep(stepNum) {
+    currentStep = stepNum;
+    step1.classList.toggle("hidden", stepNum !== 1);
+    step2.classList.toggle("hidden", stepNum !== 2);
+    step3.classList.toggle("hidden", stepNum !== 3);
+  }
+
+  function resetForm() {
+    currentStep = 1;
+    selectedType = "independent";
+    selectedRepo = null;
+    currentRating = 5;
+    firstKeystrokeTime = 0;
+    updateStarUI(5);
+    if (reviewForm) reviewForm.reset();
+    if (charCountEl) {
+      charCountEl.textContent = "500 chars left (min 20)";
+      charCountEl.classList.remove("text-red-400", "text-amber-400");
+    }
+    showStep(1);
+  }
+
+  function openModal() {
+    formOpenTime = Date.now();
+    firstKeystrokeTime = 0;
+    resetForm();
+    modal.classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
+
+  function tryCloseModal() {
+    const textLen = (contentInput?.value || "").trim().length;
+    if (textLen > 10) {
+      // Prompt discard confirmation
+      discardModal.classList.add("active");
+    } else {
+      forceCloseModal();
+    }
+  }
+
+  function forceCloseModal() {
+    modal.classList.remove("active");
+    discardModal?.classList.remove("active");
+    document.body.style.overflow = "";
+    resetForm();
+  }
+
+  // Open & Close Triggers
+  openBtn.addEventListener("click", () => {
+    openModal();
+    getDeviceFingerprint().then((fp) => {
+      if (isDeviceReviewBlocked(fp)) {
+        showToast("Notice: A review has already been submitted from this device.");
+      }
+    });
+  });
+
+  closeBtn?.addEventListener("click", tryCloseModal);
+
+  // Backdrop click guards
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) tryCloseModal();
+  });
+  discardModal?.addEventListener("click", (e) => {
+    if (e.target === discardModal) discardModal.classList.remove("active");
+  });
+
+  discardCancelBtn?.addEventListener("click", () => {
+    discardModal.classList.remove("active");
+  });
+  discardConfirmBtn?.addEventListener("click", () => {
+    forceCloseModal();
+  });
+
+  // Global Escape key listener (WCAG 2.2 compliant)
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      if (discardModal?.classList.contains("active")) {
+        discardModal.classList.remove("active");
+      } else if (modal.classList.contains("active")) {
+        tryCloseModal();
+      }
+    }
+  });
+
+  // Step 1: Type Selection
+  typeCards.forEach((card) => {
+    card.addEventListener("click", async () => {
+      selectedType = card.dataset.type;
+
+      if (selectedType === "public_repo") {
+        selectedTypeBadge.textContent = "Public Repo";
+        showStep(2);
+        await loadReposForStep2();
+      } else if (selectedType === "private_service") {
+        selectedTypeBadge.textContent = "Private Service";
+        selectedRepoBadge.textContent = "[Client Contract]";
+        selectedRepo = null;
+        showStep(3);
+      } else {
+        selectedTypeBadge.textContent = "Independent Review";
+        selectedRepoBadge.textContent = "[General Tech Assessment]";
+        selectedRepo = null;
+        showStep(3);
+      }
+    });
+
+    // Keyboard enter / space
+    card.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        card.click();
+      }
+    });
+  });
+
+  // Step 2: Repo Selector
+  async function loadReposForStep2() {
+    if (cachedLiveRepos.length === 0) {
+      repoListContainer.innerHTML = `
+        <div class="p-6 text-center text-xs text-zinc-500 font-mono flex items-center justify-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <span>Fetching live public repositories from GitHub...</span>
+        </div>
+      `;
+      try {
+        const ghClient = new window.GitHubApiClient("R3xo666");
+        const repos = await ghClient.fetchRepositories();
+        if (repos && Array.isArray(repos)) {
+          const ignored = new Set(["r3xo666", "r3xo666.github.io"]);
+          cachedLiveRepos = repos.filter((r) => !ignored.has(r.name.toLowerCase()) && !r.fork);
+        }
+      } catch (_) {}
+
+      // Fallback to curated repos if API failed
+      if (cachedLiveRepos.length === 0 && window.PORTFOLIO_DATA?.curatedProjects) {
+        cachedLiveRepos = window.PORTFOLIO_DATA.curatedProjects.map((p) => ({
+          name: p.repoName,
+          description: p.description,
+          stargazers_count: p.stars || 0,
+          language: p.language || "Python"
+        }));
+      }
+    }
+
+    renderRepoList();
+  }
+
+  function renderRepoList() {
+    const query = (repoSearchInput?.value || "").toLowerCase().trim();
+    const activeTab = document.querySelector(".repo-filter-tab.active")?.dataset.repoFilter || "pinned";
+
+    const pinnedNames = new Set([
+      "shopify-sentinel-restock-daemon",
+      "crypto-telegram-threshold-monitor",
+      "bookstore-catalog-scraper"
+    ]);
+
+    let filtered = cachedLiveRepos.filter((r) => {
+      const matchQuery = r.name.toLowerCase().includes(query) || (r.description || "").toLowerCase().includes(query);
+      if (!matchQuery) return false;
+
+      if (activeTab === "pinned") {
+        return pinnedNames.has(r.name.toLowerCase());
+      } else if (activeTab === "trending") {
+        return (r.stargazers_count || 0) > 0 || pinnedNames.has(r.name.toLowerCase());
+      }
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      repoListContainer.innerHTML = `
+        <div class="p-5 text-center text-xs text-zinc-500 font-mono">
+          No repositories found matching current filter.
+        </div>
+      `;
+      return;
+    }
+
+    repoListContainer.innerHTML = filtered
+      .map((r) => {
+        const cleanTitle = r.name.split(/[-_]+/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+        const isPinned = pinnedNames.has(r.name.toLowerCase());
+
+        return `
+          <div class="repo-select-item p-3 rounded-xl bg-zinc-900/60 hover:bg-zinc-800 border border-zinc-800/80 hover:border-zinc-700 cursor-pointer transition flex items-center justify-between gap-3 group" data-reponame="${escapeHtml(r.name)}" data-displaytitle="${escapeHtml(cleanTitle)}">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-white group-hover:text-emerald-300 transition truncate">${escapeHtml(cleanTitle)}</span>
+                ${isPinned ? `<span class="text-[9px] font-mono uppercase px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-400 border border-emerald-800/60 shrink-0">Pinned</span>` : ""}
+              </div>
+              <p class="text-[11px] text-zinc-400 truncate mt-0.5">${escapeHtml(r.description || "Micro-SaaS daemon on GitHub")}</p>
+            </div>
+            <div class="flex items-center gap-2.5 shrink-0 text-xs font-mono text-zinc-400">
+              <span>⭐ ${r.stargazers_count || 0}</span>
+              <span class="px-2.5 py-1 rounded-lg bg-zinc-800 group-hover:bg-emerald-500 group-hover:text-black font-semibold text-[11px] text-white transition">Select</span>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+
+    // Attach click listeners to repo items
+    repoListContainer.querySelectorAll(".repo-select-item").forEach((el) => {
+      el.addEventListener("click", () => {
+        selectedRepo = {
+          repoName: el.dataset.reponame,
+          displayName: el.dataset.displaytitle
+        };
+        selectedTypeBadge.textContent = "Public Repo";
+        selectedRepoBadge.textContent = `/${selectedRepo.repoName}`;
+        showStep(3);
+      });
+    });
+  }
+
+  // Repo filter tabs
+  repoFilterTabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      repoFilterTabs.forEach((t) => {
+        t.classList.remove("active", "bg-zinc-100", "text-black", "border-white");
+        t.classList.add("bg-zinc-900", "text-zinc-400", "border-zinc-800");
+      });
+      tab.classList.add("active", "bg-zinc-100", "text-black", "border-white");
+      tab.classList.remove("bg-zinc-900", "text-zinc-400", "border-zinc-800");
+      renderRepoList();
+    });
+  });
+
+  repoSearchInput?.addEventListener("input", renderRepoList);
+
+  backToStep1Btn?.addEventListener("click", () => showStep(1));
+  backFromStep3Btn?.addEventListener("click", () => {
+    if (selectedType === "public_repo") {
+      showStep(2);
+    } else {
+      showStep(1);
+    }
+  });
+
+  // Star Rating Interaction
+  function updateStarUI(val) {
+    currentRating = val;
+    starBtns.forEach((btn) => {
+      const starVal = Number(btn.dataset.rating);
+      if (starVal <= val) {
+        btn.classList.add("text-amber-400");
+        btn.classList.remove("text-zinc-600");
+      } else {
+        btn.classList.remove("text-amber-400");
+        btn.classList.add("text-zinc-600");
+      }
+    });
+    if (ratingLabel) ratingLabel.textContent = `${val}.0 / 5.0`;
+  }
+
+  starBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      updateStarUI(Number(btn.dataset.rating));
+    });
+  });
+
+  // Character Counter & First Keystroke Tracking
+  contentInput?.addEventListener("input", () => {
+    if (!firstKeystrokeTime) firstKeystrokeTime = Date.now();
+    const len = contentInput.value.length;
+    const remaining = 500 - len;
+
+    if (charCountEl) {
+      if (len < 20) {
+        charCountEl.textContent = `${remaining} chars left (need ${20 - len} more)`;
+        charCountEl.classList.add("text-amber-400");
+        charCountEl.classList.remove("text-red-400");
+      } else if (remaining < 0) {
+        charCountEl.textContent = `${Math.abs(remaining)} chars over limit!`;
+        charCountEl.classList.add("text-red-400");
+        charCountEl.classList.remove("text-amber-400");
+      } else {
+        charCountEl.textContent = `${remaining} chars left`;
+        charCountEl.classList.remove("text-red-400", "text-amber-400");
+      }
+    }
+  });
+
+  // ==================== SUBMISSION ROUTE 1: VIA GITHUB ISSUE ====================
+  submitGhBtn?.addEventListener("click", () => {
+    const rawAuthor = (authorInput?.value || "").trim();
+    const rawRole = (roleInput?.value || "").trim();
+    const rawContent = (contentInput?.value || "").trim();
+    const rawTelemetry = (telemetryInput?.value || "").trim();
+
+    if (!rawAuthor || !rawRole || !rawContent) {
+      showToast("Please fill in your name, role, and feedback before submitting.");
+      return;
+    }
+
+    if (rawContent.length < 20) {
+      showToast("Please provide at least 20 characters of detailed feedback.");
+      return;
+    }
+
+    const typeLabel =
+      selectedType === "public_repo"
+        ? `Public Repository (${selectedRepo?.repoName || "General"})`
+        : selectedType === "private_service"
+        ? "Private Service Contract"
+        : "Independent Developer Review";
+
+    const issueTitle = `[Review] ${typeLabel} - ${rawAuthor}`;
+    const issueBody = `### Reviewer Details
+- **Reviewer**: ${rawAuthor}
+- **Role / Affiliation**: ${rawRole}
+- **Category**: ${typeLabel}
+- **Rating**: ${currentRating}.0 / 5.0
+${rawTelemetry ? `- **Outcome / Metric**: ${rawTelemetry}` : ""}
+- **Date**: ${new Date().toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+
+### Endorsement
+> ${rawContent}
+
+---
+*Submitted via R3xo666 Portfolio Verified Reviews Flow*`;
+
+    const ghUrl = `https://github.com/R3xo666/R3xo666.github.io/issues/new?title=${encodeURIComponent(issueTitle)}&labels=review-submission&body=${encodeURIComponent(issueBody)}`;
+
+    window.open(ghUrl, "_blank", "noopener,noreferrer");
+    showToast("Opening GitHub issue template for verified submission...");
+    forceCloseModal();
+  });
+
+  // ==================== SUBMISSION ROUTE 2: DIRECT ON WEBSITE ====================
+  reviewForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // 1. Honeypot check
+    if (botTrap && botTrap.value.trim().length > 0) {
+      console.warn("[Security] Review bot trap triggered. Dropping silently.");
+      showToast("Verification failed: automated submission detected.");
+      return;
+    }
+
+    // 2. Velocity check
+    const fillDuration = firstKeystrokeTime ? (Date.now() - firstKeystrokeTime) / 1000 : 0;
+    if (fillDuration < 2.0) {
+      showToast("Security notice: Submission too fast. Please take a moment to review.");
+      return;
+    }
+
+    // 3. Length checks
+    const rawAuthor = (authorInput?.value || "").trim();
+    const rawRole = (roleInput?.value || "").trim();
+    const rawContent = (contentInput?.value || "").trim();
+    const rawTelemetry = (telemetryInput?.value || "").trim();
+
+    if (rawContent.length < 20) {
+      showToast("Review must contain at least 20 characters of feedback.");
+      return;
+    }
+    if (rawContent.length > 500) {
+      showToast("Review exceeds 500 character maximum limit.");
+      return;
+    }
+
+    // 4. Hardware Fingerprint duplicate check
+    const fingerprint = await getDeviceFingerprint();
+    if (isDeviceReviewBlocked(fingerprint)) {
+      showToast("A review has already been recorded from this device.");
+      forceCloseModal();
+      return;
+    }
+
+    // 5. Input Sanitization (OWASP CWE-1236 & CWE-79)
+    const sanitize = (str) => {
+      if (!str) return "";
+      let s = str.trim();
+      if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+      return s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "");
+    };
+
+    const cleanAuthor = sanitize(rawAuthor).slice(0, 60);
+    const cleanRole = sanitize(rawRole).slice(0, 80);
+    const cleanContent = sanitize(rawContent).slice(0, 500);
+    const cleanTelemetry = sanitize(rawTelemetry).slice(0, 40);
+
+    const origBtnHtml = submitWebBtn.innerHTML;
+    submitWebBtn.innerHTML = `
+      <span class="flex items-center justify-center gap-1.5 text-black font-mono text-xs font-semibold">
+        <span class="w-2 h-2 rounded-full bg-black animate-ping"></span>
+        Submitting...
+      </span>
+    `;
+    submitWebBtn.disabled = true;
+
+    // Fast non-blocking IP resolution (Max 400ms timeout)
+    let clientIp = "Protected Device Client";
+    try {
+      const ipController = new AbortController();
+      const ipTimeout = setTimeout(() => ipController.abort(), 400);
+      const ipRes = await fetch("https://api.ipify.org?format=json", { signal: ipController.signal });
+      clearTimeout(ipTimeout);
+      if (ipRes.ok) {
+        const ipData = await ipRes.json();
+        if (ipData && ipData.ip) clientIp = ipData.ip;
+      }
+    } catch (_) {}
+
+    const timestamp = new Date().toISOString();
+    const displayDate = new Date().toLocaleDateString("en-US", { month: "short", year: "numeric" });
+
+    // Create optimistic review for instant local rendering
+    const newOptimisticReview = {
+      id: "local-" + Date.now(),
+      type: selectedType,
+      repoName: selectedRepo?.repoName || undefined,
+      projectName: selectedRepo ? selectedRepo.displayName : selectedType === "private_service" ? "Private Service Contract" : "Independent Developer Review",
+      author: cleanAuthor,
+      role: cleanRole,
+      rating: currentRating,
+      verified: true,
+      isLocalOptimistic: true,
+      date: displayDate,
+      content: cleanContent,
+      telemetry: cleanTelemetry
+        ? { metric: "Outcome", value: cleanTelemetry, badge: "Device Verified" }
+        : { metric: "Quality", value: `${currentRating}.0 / 5.0`, badge: "Verified" }
+    };
+
+    // Save optimistic review in localStorage
+    try {
+      const localReviews = JSON.parse(localStorage.getItem("r3xo_local_reviews") || "[]");
+      localReviews.unshift(newOptimisticReview);
+      localStorage.setItem("r3xo_local_reviews", JSON.stringify(localReviews));
+    } catch (_) {}
+
+    // Lock device against multiple submissions
+    markDeviceReviewSubmitted(fingerprint);
+
+    // Relay to FormSubmit
+    const payload = {
+      _subject: `New Portfolio Endorsement: [${selectedType.toUpperCase()}] from ${cleanAuthor}`,
+      "Reviewer Name": cleanAuthor,
+      "Reviewer Role": cleanRole,
+      "Review Type": selectedType,
+      "Associated Project": selectedRepo?.repoName || "N/A (Direct Review)",
+      "Star Rating": `${currentRating} / 5`,
+      "Review Content": cleanContent,
+      "Outcome Metric": cleanTelemetry || "N/A",
+      "Device Fingerprint": fingerprint,
+      "Client IP": sanitize(clientIp),
+      "Platform & Concurrency": `${navigator.userAgent} (${navigator.hardwareConcurrency || "N/A"} cores)`,
+      "UTC Timestamp": timestamp,
+      _template: "table",
+      _autoresponse: "false",
+      _captcha: "false"
+    };
+
+    try {
+      await fetch("https://formsubmit.co/ajax/08f3194081fd18843e70ce3d2e683ccd", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
+        keepalive: true
+      });
+    } catch (err) {
+      console.warn("[Reviews] Server relay notice:", err);
+    }
+
+    submitWebBtn.innerHTML = origBtnHtml;
+    submitWebBtn.disabled = false;
+
+    // Close modal, re-render, and celebrate
+    forceCloseModal();
+    renderReviews();
+    showToast("Review submitted successfully! Live optimistic preview active on this device.");
+  });
+}
+

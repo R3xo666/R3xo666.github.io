@@ -135,6 +135,63 @@ const PORTFOLIO_DATA = {
         "OWASP CWE-918 SSRF defense & 1-click cart checkout embeds"
       ]
     }
+  ],
+
+  reviews: [
+    {
+      id: "rev-01",
+      type: "public_repo",
+      repoName: "shopify-sentinel-restock-daemon",
+      projectName: "Shopify Sentinel Daemon",
+      author: "Karan S.",
+      role: "E-Commerce Founder",
+      handle: "@karan_drops",
+      rating: 5,
+      verified: true,
+      date: "Oct 2026",
+      content: "Aditya built this autonomous restock poller for sneaker drops. The SQLite WAL state machine catches inventory shifts in under 100ms before manual checkers even refresh. Flawless execution.",
+      telemetry: { metric: "Latency", value: "<100ms", badge: "Verified" }
+    },
+    {
+      id: "rev-02",
+      type: "private_service",
+      projectName: "Custom High-Throughput Web Scraper",
+      author: "Elena Rostova",
+      role: "Data Operations Lead",
+      handle: "@elena_data",
+      rating: 5,
+      verified: true,
+      date: "Sep 2026",
+      content: "Contracted Aditya for a private distributed scraping pipeline. Handled 100K+ requests with automated IP jitter and polite backoffs without getting blocked. Codebase was clean and modular.",
+      telemetry: { metric: "Throughput", value: "100k+ req/day", badge: "Production" }
+    },
+    {
+      id: "rev-03",
+      type: "independent",
+      projectName: "Core Engineering & Work Ethic",
+      author: "DevX Collective",
+      role: "Open-Source Peer & Contributor",
+      handle: "devx-community",
+      rating: 5,
+      verified: true,
+      date: "Sep 2026",
+      content: "Super sharp developer with deep systems knowledge. Writes resilient async Python, follows OWASP standards religiously, and doesn't cut corners with bloated libraries. Solid problem-solver.",
+      telemetry: { metric: "Code Quality", value: "OWASP Hardened", badge: "Peer Review" }
+    },
+    {
+      id: "rev-04",
+      type: "public_repo",
+      repoName: "crypto-telegram-threshold-monitor",
+      projectName: "Crypto Arbitrage Bot",
+      author: "Tariq M.",
+      role: "DeFi Algorithmic Trader",
+      handle: "@tariq_defi",
+      rating: 5,
+      verified: true,
+      date: "Aug 2026",
+      content: "Zero false-alert spam during high volatility spikes thanks to his hysteresis threshold logic. WebSocket reconnect handling is bulletproof.",
+      telemetry: { metric: "Uptime", value: "99.98%", badge: "Algorithmic" }
+    }
   ]
 };
 
