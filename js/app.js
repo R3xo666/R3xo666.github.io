@@ -1901,6 +1901,13 @@ function initVimAndCommandPalette() {
     });
   }
 
+  function scrollActiveIntoView() {
+    const activeItem = cmdResults?.querySelector(`.cmd-item[data-index='${selectedIndex}']`);
+    if (activeItem) {
+      activeItem.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  }
+
   function executeCommand(cmd) {
     if (!cmd) return;
     closeCmdPalette();
@@ -1970,11 +1977,13 @@ function initVimAndCommandPalette() {
         selectedIndex = (selectedIndex + 1) % filteredCommands.length;
         renderResults();
         playSfx("blip");
+        scrollActiveIntoView();
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
         selectedIndex = (selectedIndex - 1 + filteredCommands.length) % filteredCommands.length;
         renderResults();
         playSfx("blip");
+        scrollActiveIntoView();
       } else if (e.key === "Enter") {
         e.preventDefault();
         if (filteredCommands[selectedIndex]) {
