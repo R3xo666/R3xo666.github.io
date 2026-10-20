@@ -65,6 +65,29 @@ function initNavigation() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  // WCAG 2.2 Tab Keyboard Navigation (ArrowLeft / ArrowRight)
+  const tabList = document.querySelector('[role="tablist"]');
+  if (tabList) {
+    tabList.addEventListener("keydown", (e) => {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      const pillsArray = Array.from(navPills);
+      const currentIndex = pillsArray.findIndex((p) => p.getAttribute("aria-selected") === "true");
+      let nextIndex = currentIndex;
+      if (e.key === "ArrowRight") {
+        nextIndex = (currentIndex + 1) % pillsArray.length;
+      } else if (e.key === "ArrowLeft") {
+        nextIndex = (currentIndex - 1 + pillsArray.length) % pillsArray.length;
+      }
+      const nextPill = pillsArray[nextIndex];
+      if (nextPill) {
+        nextPill.focus();
+        const target = nextPill.dataset.tab;
+        switchTab(target);
+        history.replaceState(null, "", `#${target.replace("tab-", "")}`);
+      }
+    });
+  }
+
   navPills.forEach((pill) => {
     pill.addEventListener("click", (e) => {
       e.preventDefault();
@@ -101,6 +124,18 @@ function initNavigation() {
   });
 }
 
+// Lightweight HTML Entity Encoder (OWASP A03 / CWE-79 Defense)
+function escapeHtml(str) {
+  if (typeof str !== "string") return str ?? "";
+  return str.replace(/[&<>"']/g, (m) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[m]));
+}
+
 // Render Projects with Aceternity Card Styling
 async function renderProjects() {
   const container = document.getElementById("projects-grid");
@@ -133,11 +168,17 @@ async function renderProjects() {
 }
 
 function createAceternityProjectCard(p) {
+  const safeDisplayName = escapeHtml(p.displayName);
+  const safeRepoName = escapeHtml(p.repoName);
+  const safeDescription = escapeHtml(p.description);
+  const safeBadge = escapeHtml(p.badge);
+  const safeUrl = (p.githubUrl && p.githubUrl.startsWith("https://github.com/")) ? p.githubUrl : `https://github.com/R3xo666/${safeRepoName}`;
+
   const tagsHtml = p.topics
     .slice(0, 4)
     .map(
       (t) =>
-        `<span class="text-[11px] px-2.5 py-0.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono">#${t}</span>`
+        `<span class="text-[11px] px-2.5 py-0.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono">#${escapeHtml(t)}</span>`
     )
     .join("");
 
@@ -146,7 +187,7 @@ function createAceternityProjectCard(p) {
       (h) => `
       <li class="flex items-start gap-2 text-xs text-zinc-300">
         <span class="text-zinc-500 mt-0.5 font-mono">/</span>
-        <span>${h}</span>
+        <span>${escapeHtml(h)}</span>
       </li>
     `
     )
@@ -172,11 +213,11 @@ function createAceternityProjectCard(p) {
     : "";
 
   return `
-    <div class="aceternity-card p-6 flex flex-col justify-between group" data-tags="${p.topics.join(" ")}">
+    <div class="aceternity-card p-6 flex flex-col justify-between group" data-tags="${p.topics.map((t) => escapeHtml(t)).join(" ")}">
       <div>
         <div class="flex items-center justify-between gap-3 mb-4">
           <span class="text-[11px] font-medium tracking-wide uppercase px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-700/60 text-zinc-300">
-            ${p.badge}
+            ${safeBadge}
           </span>
           <div class="flex items-center gap-3 text-xs text-zinc-400 font-mono">
             <span>⭐ ${p.stars || 0}</span>
@@ -185,11 +226,11 @@ function createAceternityProjectCard(p) {
         </div>
 
         <h3 class="text-lg font-bold text-white group-hover:text-zinc-200 transition-colors">
-          ${p.displayName}
+          ${safeDisplayName}
         </h3>
-        <p class="text-xs text-zinc-500 font-mono mt-0.5 mb-3">${p.repoName}</p>
+        <p class="text-xs text-zinc-500 font-mono mt-0.5 mb-3">${safeRepoName}</p>
         <p class="text-sm text-zinc-400 leading-relaxed mb-5">
-          ${p.description}
+          ${safeDescription}
         </p>
 
         <ul class="space-y-1.5 mb-5 p-3 rounded-xl bg-black/40 border border-zinc-800/80">
@@ -208,9 +249,9 @@ function createAceternityProjectCard(p) {
           <div class="flex items-center gap-2 text-zinc-400 shrink-0 whitespace-nowrap">
             <span class="w-2 h-2 shrink-0 rounded-full bg-emerald-400"></span>
             <span class="text-zinc-300 font-medium">Python</span>
-            ${p.liveUpdated ? `<span class="text-zinc-500 font-sans text-[11px] whitespace-nowrap">&bull;&nbsp;${p.liveUpdated}</span>` : ""}
+            ${p.liveUpdated ? `<span class="text-zinc-500 font-sans text-[11px] whitespace-nowrap">&bull;&nbsp;${escapeHtml(p.liveUpdated)}</span>` : ""}
           </div>
-          <a href="${p.githubUrl}" target="_blank" rel="noopener noreferrer" 
+          <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" 
              class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 hover:text-white transition-all duration-200 border border-zinc-700 hover:border-zinc-500 shadow-sm ml-auto whitespace-nowrap">
             <span>Repository</span>
             <span class="text-zinc-400 group-hover:translate-x-0.5 transition-transform">↗</span>
@@ -442,6 +483,7 @@ function initSecureContactPipeline() {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
     const language = navigator.language || "en";
     const timestamp = new Date().toISOString();
+    const cleanIp = sanitize(clientIp).slice(0, 60);
 
     // 6. Anti-Spam FormSubmit Payload (RFC-compliant subject, replyto, no spam triggers)
     const payload = {
@@ -449,7 +491,7 @@ function initSecureContactPipeline() {
       "Sender Name": cleanName,
       "Contact Handle": cleanHandle,
       "Message Content": cleanMessage,
-      "Client IP Address": clientIp,
+      "Client IP Address": cleanIp,
       "Device & Platform": userAgent,
       "Timezone & Locale": `${timezone} (${language})`,
       "Security Verification": `Passed (Human Verification: ${interactionDuration.toFixed(1)}s)`,

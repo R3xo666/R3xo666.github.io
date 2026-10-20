@@ -7,6 +7,9 @@
   <meta name="description" content="Portfolio of Aditya Kumar (R3xo666) — Python engineer specializing in micro-SaaS data pipelines, document extractors with OWASP defense, and 24/7 financial daemons.">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   
+  <!-- Content Security Policy (OWASP A05 Defense) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.github.com https://api.ipify.org https://formsubmit.co; frame-ancestors 'none'; base-uri 'self'; form-action https://formsubmit.co;">
+  
   <!-- Inter & JetBrains Mono Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,17 +58,17 @@
       </a>
 
       <!-- Navigation Tabs (Pill Structure) -->
-      <div class="flex items-center gap-1 text-xs" role="tablist">
-        <button role="tab" aria-selected="true" class="nav-pill active px-3 py-1 rounded-full border border-transparent font-medium" data-tab="tab-overview">
+      <div class="flex items-center gap-1 text-xs" role="tablist" aria-label="Portfolio Sections">
+        <button id="tab-btn-overview" role="tab" aria-selected="true" aria-controls="tab-overview" class="nav-pill active px-3 py-1 rounded-full border border-transparent font-medium" data-tab="tab-overview">
           Overview
         </button>
-        <button role="tab" aria-selected="false" class="nav-pill px-3 py-1 rounded-full border border-transparent font-medium" data-tab="tab-projects">
+        <button id="tab-btn-projects" role="tab" aria-selected="false" aria-controls="tab-projects" class="nav-pill px-3 py-1 rounded-full border border-transparent font-medium" data-tab="tab-projects">
           Projects
         </button>
-        <button role="tab" aria-selected="false" class="nav-pill px-3 py-1 rounded-full border border-transparent font-medium" data-tab="tab-about">
+        <button id="tab-btn-about" role="tab" aria-selected="false" aria-controls="tab-about" class="nav-pill px-3 py-1 rounded-full border border-transparent font-medium" data-tab="tab-about">
           About
         </button>
-        <button role="tab" aria-selected="false" class="nav-pill px-3 py-1 rounded-full border border-transparent font-medium" data-tab="tab-contact">
+        <button id="tab-btn-contact" role="tab" aria-selected="false" aria-controls="tab-contact" class="nav-pill px-3 py-1 rounded-full border border-transparent font-medium" data-tab="tab-contact">
           Contact
         </button>
       </div>
@@ -85,7 +88,7 @@
   <main class="flex-grow max-w-5xl mx-auto w-full px-4 pt-12 pb-24 relative z-10">
 
     <!-- ==================== VIEW 1: OVERVIEW / LANDING ==================== -->
-    <section id="tab-overview" class="tab-content active space-y-14">
+    <section id="tab-overview" role="tabpanel" aria-labelledby="tab-btn-overview" class="tab-content active space-y-14">
       
       <!-- Hero Section (Aceternity Startup Minimalist Style) -->
       <div class="text-center pt-8 pb-4 max-w-2xl mx-auto">
@@ -185,7 +188,7 @@ developer = {
     </section>
 
     <!-- ==================== VIEW 2: PROJECTS VIEW ==================== -->
-    <section id="tab-projects" class="tab-content space-y-8">
+    <section id="tab-projects" role="tabpanel" aria-labelledby="tab-btn-projects" class="tab-content space-y-8">
       
       <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-zinc-800">
         <div>
@@ -213,7 +216,7 @@ developer = {
     </section>
 
     <!-- ==================== VIEW 3: ABOUT & ARSENAL ==================== -->
-    <section id="tab-about" class="tab-content space-y-8">
+    <section id="tab-about" role="tabpanel" aria-labelledby="tab-btn-about" class="tab-content space-y-8">
       
       <div class="pb-4 border-b border-zinc-800">
         <span class="text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold">Philosophy & Stack</span>
@@ -268,7 +271,7 @@ developer = {
     </section>
 
     <!-- ==================== VIEW 4: CONTACT VIEW ==================== -->
-    <section id="tab-contact" class="tab-content space-y-8">
+    <section id="tab-contact" role="tabpanel" aria-labelledby="tab-btn-contact" class="tab-content space-y-8">
       
       <div class="pb-4 border-b border-zinc-800">
         <span class="text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold">Connect</span>
@@ -325,7 +328,7 @@ developer = {
         <h3 class="text-sm font-bold text-white mb-1">Direct Inquiry</h3>
         <p class="text-xs text-zinc-500 mb-5">Leave a message regarding a micro-SaaS or data extraction project.</p>
 
-        <form id="contact-form" action="https://formsubmit.co/r3xo666.dev@gmail.com" method="POST" class="space-y-4">
+        <form id="contact-form" action="https://formsubmit.co/08f3194081fd18843e70ce3d2e683ccd" method="POST" class="space-y-4">
           <!-- Invisible Bot Trap (Honeypot) -->
           <input type="text" id="trap-bot" name="_trap_bot" tabindex="-1" autocomplete="off" class="opacity-0 absolute -z-10 w-0 h-0 pointer-events-none select-none" aria-hidden="true">
 
