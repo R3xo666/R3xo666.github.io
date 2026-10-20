@@ -710,7 +710,7 @@ function markDeviceReviewSubmitted(fingerprint) {
 }
 
 // ==================== Render Reviews & Filtering ====================
-function renderReviews() {
+async function renderReviews() {
   const container = document.getElementById("reviews-grid");
   if (!container) return;
 
@@ -720,13 +720,17 @@ function renderReviews() {
     reviews = [...data.reviews];
   }
 
-  // Merge any optimistic local reviews from this device
+  // Fetch approved live reviews from GitHub Issues
   try {
-    const local = JSON.parse(localStorage.getItem("r3xo_local_reviews") || "[]");
-    if (Array.isArray(local) && local.length > 0) {
-      reviews = [...local, ...reviews];
+    const ghClient = new window.GitHubApiClient("R3xo666");
+    const liveApprovedReviews = await ghClient.fetchApprovedReviews();
+    if (liveApprovedReviews && liveApprovedReviews.length > 0) {
+      // Live approved reviews from real GitHub users take top priority!
+      reviews = [...liveApprovedReviews, ...reviews];
     }
-  } catch (_) {}
+  } catch (err) {
+    console.warn("[Reviews] Live GitHub fetch notice:", err);
+  }
 
   const countEl = document.getElementById("stat-review-count");
   if (countEl) {
@@ -752,6 +756,12 @@ function createAceternityReviewCard(r) {
   const rawAuthorClean = String(r.author || "A").trim().replace(/^['"@\s]+/, "");
   const avatarLetter = escapeHtml((rawAuthorClean.charAt(0) || "A").toUpperCase());
 
+  // Real GitHub avatar check
+  const hasValidAvatar = r.avatar && (r.avatar.startsWith("https://avatars.githubusercontent.com/") || r.avatar.startsWith("https://github.com/"));
+  const avatarHtml = hasValidAvatar
+    ? `<img src="${escapeHtml(r.avatar)}" alt="${safeAuthor}" class="w-7 h-7 rounded-full object-cover border border-zinc-700 shrink-0">`
+    : `<div class="w-7 h-7 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 font-mono text-[11px] font-bold shrink-0">${avatarLetter}</div>`;
+
   let typeBadgeLabel = "Peer Endorsement";
   let typeBadgeColor = "text-zinc-400 bg-zinc-900 border-zinc-800";
   if (safeType === "private_service") {
@@ -762,6 +772,7 @@ function createAceternityReviewCard(r) {
     typeBadgeColor = "text-sky-400 bg-sky-950/40 border-sky-800/40";
   }
 
+  const isGitHubVerified = r.isGitHubVerified;
   const isLocalOptimistic = r.isLocalOptimistic;
 
   const telemetryHtml = r.telemetry
@@ -775,6 +786,23 @@ function createAceternityReviewCard(r) {
       </div>
     `
     : "";
+
+  const authorLinkHtml = r.profileUrl && r.profileUrl.startsWith("https://github.com/")
+    ? `<a href="${escapeHtml(r.profileUrl)}" target="_blank" rel="noopener noreferrer" class="font-semibold text-white hover:text-emerald-400 transition truncate text-xs flex items-center gap-1.5">
+        <span>${safeAuthor}</span>
+        ${safeHandle ? `<span class="text-zinc-500 font-mono text-[10px] font-normal truncate">${safeHandle}</span>` : ""}
+      </a>`
+    : `<div class="font-semibold text-white truncate text-xs flex items-center gap-1.5">
+        <span>${safeAuthor}</span>
+        ${safeHandle ? `<span class="text-zinc-500 font-mono text-[10px] font-normal truncate">${safeHandle}</span>` : ""}
+      </div>`;
+
+  const footerActionHtml = r.issueUrl && r.issueUrl.startsWith("https://github.com/R3xo666/R3xo666.github.io/issues/")
+    ? `<a href="${escapeHtml(r.issueUrl)}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-mono text-zinc-500 hover:text-emerald-400 flex items-center gap-1 transition shrink-0">
+        <span>#${escapeHtml(String(r.issueNumber || ""))} Live on GitHub</span>
+        <span>↗</span>
+      </a>`
+    : `<span class="text-[10px] font-mono text-zinc-500 shrink-0">${safeDate}</span>`;
 
   return `
     <div class="aceternity-card p-6 flex flex-col justify-between group" data-review-type="${escapeHtml(safeType)}">
@@ -791,7 +819,7 @@ function createAceternityReviewCard(r) {
             <span class="text-[10px] font-mono uppercase tracking-wide px-2.5 py-0.5 rounded-full border ${typeBadgeColor}">
               ${typeBadgeLabel}
             </span>
-            ${isLocalOptimistic ? `<span class="text-[10px] font-mono text-amber-400 animate-pulse">● Pending Sync</span>` : `<span class="text-[10px] font-mono text-emerald-400">✓ Verified</span>`}
+            ${isLocalOptimistic ? `<span class="text-[10px] font-mono text-amber-400 animate-pulse">● Pending Sync</span>` : isGitHubVerified ? `<span class="text-[10px] font-mono text-emerald-400 flex items-center gap-1">✓ GitHub Verified</span>` : `<span class="text-[10px] font-mono text-emerald-400">✓ Verified</span>`}
           </div>
         </div>
 
@@ -804,18 +832,13 @@ function createAceternityReviewCard(r) {
 
       <div class="pt-4 mt-4 border-t border-zinc-800/80 flex items-center justify-between gap-3 text-xs">
         <div class="flex items-center gap-2.5 min-w-0">
-          <div class="w-7 h-7 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 font-mono text-[11px] font-bold shrink-0">
-            ${avatarLetter}
-          </div>
+          ${avatarHtml}
           <div class="min-w-0">
-            <div class="font-semibold text-white truncate text-xs flex items-center gap-1.5">
-              <span>${safeAuthor}</span>
-              ${safeHandle ? `<span class="text-zinc-500 font-mono text-[10px] font-normal truncate">${safeHandle}</span>` : ""}
-            </div>
+            ${authorLinkHtml}
             <div class="text-[10px] text-zinc-500 truncate">${safeRole}</div>
           </div>
         </div>
-        <span class="text-[10px] font-mono text-zinc-500 shrink-0">${safeDate}</span>
+        ${footerActionHtml}
       </div>
     </div>
   `;
@@ -1184,20 +1207,20 @@ function initReviewModal() {
     }
   });
 
-  // ==================== SUBMISSION ROUTE 1: VIA GITHUB ISSUE ====================
+  // ==================== SUBMISSION ROUTE: DIRECT VIA GITHUB ISSUE ====================
   submitGhBtn?.addEventListener("click", () => {
-    const rawAuthor = (authorInput?.value || "").trim();
     const rawRole = (roleInput?.value || "").trim();
     const rawContent = (contentInput?.value || "").trim();
     const rawTelemetry = (telemetryInput?.value || "").trim();
+    const rawAuthor = (authorInput?.value || "").trim();
 
-    if (!rawAuthor || !rawRole || !rawContent) {
-      showToast("Please fill in your name, role, and feedback before submitting.");
+    if (!rawRole || !rawContent) {
+      showToast("Please provide your role/affiliation and feedback before submitting.");
       return;
     }
 
     if (rawContent.length < 20) {
-      showToast("Please provide at least 20 characters of detailed feedback.");
+      showToast("Please write at least 20 characters of detailed feedback.");
       return;
     }
 
@@ -1208,16 +1231,17 @@ function initReviewModal() {
         ? "Private Service Contract"
         : "Independent Developer Review";
 
-    const issueTitle = `[Review] ${typeLabel} - ${rawAuthor}`;
+    const issueTitle = `[Review] ${typeLabel} - ${rawAuthor || "Collaborator"}`;
     const issueBody = `### Reviewer Details
-- **Reviewer**: ${rawAuthor}
+- **Reviewer**: ${rawAuthor || "GitHub User"}
 - **Role / Affiliation**: ${rawRole}
 - **Category**: ${typeLabel}
-- **Rating**: ${currentRating}.0 / 5.0
+- **Rating**: ${currentRating} / 5
+${selectedRepo ? `- **Repository**: ${selectedRepo.repoName}` : ""}
 ${rawTelemetry ? `- **Outcome / Metric**: ${rawTelemetry}` : ""}
 - **Date**: ${new Date().toLocaleDateString("en-US", { month: "short", year: "numeric" })}
 
-### Endorsement
+### Detailed Endorsement
 > ${rawContent}
 
 ---
@@ -1226,155 +1250,8 @@ ${rawTelemetry ? `- **Outcome / Metric**: ${rawTelemetry}` : ""}
     const ghUrl = `https://github.com/R3xo666/R3xo666.github.io/issues/new?title=${encodeURIComponent(issueTitle)}&labels=review-submission&body=${encodeURIComponent(issueBody)}`;
 
     window.open(ghUrl, "_blank", "noopener,noreferrer");
-    showToast("Opening GitHub issue template for verified submission...");
+    showToast("Opening GitHub issue template! Aditya will review & verify.");
     forceCloseModal();
-  });
-
-  // ==================== SUBMISSION ROUTE 2: DIRECT ON WEBSITE ====================
-  reviewForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    // 1. Honeypot check
-    if (botTrap && botTrap.value.trim().length > 0) {
-      console.warn("[Security] Review bot trap triggered. Dropping silently.");
-      showToast("Verification failed: automated submission detected.");
-      return;
-    }
-
-    // 2. Velocity check
-    const fillDuration = firstKeystrokeTime ? (Date.now() - firstKeystrokeTime) / 1000 : 0;
-    if (fillDuration < 2.0) {
-      showToast("Security notice: Submission too fast. Please take a moment to review.");
-      return;
-    }
-
-    // 3. Length checks
-    const rawAuthor = (authorInput?.value || "").trim();
-    const rawRole = (roleInput?.value || "").trim();
-    const rawContent = (contentInput?.value || "").trim();
-    const rawTelemetry = (telemetryInput?.value || "").trim();
-
-    if (rawContent.length < 20) {
-      showToast("Review must contain at least 20 characters of feedback.");
-      return;
-    }
-    if (rawContent.length > 500) {
-      showToast("Review exceeds 500 character maximum limit.");
-      return;
-    }
-
-    // 4. Hardware Fingerprint duplicate check
-    const fingerprint = await getDeviceFingerprint();
-    if (isDeviceReviewBlocked(fingerprint)) {
-      showToast("A review has already been recorded from this device.");
-      forceCloseModal();
-      return;
-    }
-
-    // 5. Input Sanitization (OWASP CWE-1236 & CWE-79)
-    const sanitize = (str) => {
-      if (!str) return "";
-      let s = str.trim();
-      // Neutralize formula injection for dangerous spreadsheet formulas (=, +, - followed by text/numbers)
-      if (/^[=+\-\t\r]/.test(s)) s = "'" + s;
-      return s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "");
-    };
-
-    const cleanAuthor = sanitize(rawAuthor).slice(0, 60);
-    const cleanRole = sanitize(rawRole).slice(0, 80);
-    const cleanContent = sanitize(rawContent).slice(0, 500);
-    const cleanTelemetry = sanitize(rawTelemetry).slice(0, 40);
-
-    const origBtnHtml = submitWebBtn.innerHTML;
-    submitWebBtn.innerHTML = `
-      <span class="flex items-center justify-center gap-1.5 text-black font-mono text-xs font-semibold">
-        <span class="w-2 h-2 rounded-full bg-black animate-ping"></span>
-        Submitting...
-      </span>
-    `;
-    submitWebBtn.disabled = true;
-
-    // Fast non-blocking IP resolution (Max 400ms timeout)
-    let clientIp = "Protected Device Client";
-    try {
-      const ipController = new AbortController();
-      const ipTimeout = setTimeout(() => ipController.abort(), 400);
-      const ipRes = await fetch("https://api.ipify.org?format=json", { signal: ipController.signal });
-      clearTimeout(ipTimeout);
-      if (ipRes.ok) {
-        const ipData = await ipRes.json();
-        if (ipData && ipData.ip) clientIp = ipData.ip;
-      }
-    } catch (_) {}
-
-    const timestamp = new Date().toISOString();
-    const displayDate = new Date().toLocaleDateString("en-US", { month: "short", year: "numeric" });
-
-    // Create optimistic review for instant local rendering
-    const newOptimisticReview = {
-      id: "local-" + Date.now(),
-      type: selectedType,
-      repoName: selectedRepo?.repoName || undefined,
-      projectName: selectedRepo ? selectedRepo.displayName : selectedType === "private_service" ? "Private Service Contract" : "Independent Developer Review",
-      author: cleanAuthor,
-      role: cleanRole,
-      rating: currentRating,
-      verified: true,
-      isLocalOptimistic: true,
-      date: displayDate,
-      content: cleanContent,
-      telemetry: cleanTelemetry
-        ? { metric: "Outcome", value: cleanTelemetry, badge: "Device Verified" }
-        : { metric: "Quality", value: `${currentRating}.0 / 5.0`, badge: "Verified" }
-    };
-
-    // Save optimistic review in localStorage
-    try {
-      const localReviews = JSON.parse(localStorage.getItem("r3xo_local_reviews") || "[]");
-      localReviews.unshift(newOptimisticReview);
-      localStorage.setItem("r3xo_local_reviews", JSON.stringify(localReviews));
-    } catch (_) {}
-
-    // Lock device against multiple submissions
-    markDeviceReviewSubmitted(fingerprint);
-
-    // Relay to FormSubmit
-    const payload = {
-      _subject: `New Portfolio Endorsement: [${selectedType.toUpperCase()}] from ${cleanAuthor}`,
-      "Reviewer Name": cleanAuthor,
-      "Reviewer Role": cleanRole,
-      "Review Type": selectedType,
-      "Associated Project": selectedRepo?.repoName || "N/A (Direct Review)",
-      "Star Rating": `${currentRating} / 5`,
-      "Review Content": cleanContent,
-      "Outcome Metric": cleanTelemetry || "N/A",
-      "Device Fingerprint": fingerprint,
-      "Client IP": sanitize(clientIp),
-      "Platform & Concurrency": `${navigator.userAgent} (${navigator.hardwareConcurrency || "N/A"} cores)`,
-      "UTC Timestamp": timestamp,
-      _template: "table",
-      _autoresponse: "false",
-      _captcha: "false"
-    };
-
-    try {
-      await fetch("https://formsubmit.co/ajax/08f3194081fd18843e70ce3d2e683ccd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(payload),
-        keepalive: true
-      });
-    } catch (err) {
-      console.warn("[Reviews] Server relay notice:", err);
-    }
-
-    submitWebBtn.innerHTML = origBtnHtml;
-    submitWebBtn.disabled = false;
-
-    // Close modal, re-render, and celebrate
-    forceCloseModal();
-    renderReviews();
-    showToast("Review submitted successfully! Live optimistic preview active on this device.");
   });
 }
 

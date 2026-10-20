@@ -47,6 +47,118 @@ class GitHubApiClient {
     }
   }
 
+  async fetchApprovedReviews() {
+    const reviewsCacheKey = `gh_reviews_cache_${this.username}`;
+    const urlParams = new URLSearchParams(window.location.search);
+    const forceRefresh = urlParams.has("refresh") || urlParams.has("bust");
+
+    if (!forceRefresh) {
+      try {
+        const item = localStorage.getItem(reviewsCacheKey);
+        if (item) {
+          const cached = JSON.parse(item);
+          if (Date.now() - cached.timestamp < this.cacheTtlMs) {
+            console.log("[GitHubApiClient] Serving approved reviews from cache");
+            return cached.reviews;
+          }
+        }
+      } catch (_) {}
+    } else {
+      try {
+        localStorage.removeItem(reviewsCacheKey);
+      } catch (_) {}
+    }
+
+    try {
+      // Query approved review issues from the portfolio repository
+      const url = `https://api.github.com/repos/${this.username}/${this.username}.github.io/issues?labels=approved&state=all&per_page=50`;
+      const response = await fetch(url, {
+        headers: { Accept: "application/vnd.github.v3+json" }
+      });
+
+      if (!response.ok) {
+        throw new Error(`GitHub API HTTP ${response.status}`);
+      }
+
+      const issues = await response.json();
+      const parsedReviews = (issues || [])
+        .filter((issue) => !issue.pull_request)
+        .map((issue) => this.parseReviewIssue(issue))
+        .filter(Boolean);
+
+      try {
+        localStorage.setItem(reviewsCacheKey, JSON.stringify({
+          timestamp: Date.now(),
+          reviews: parsedReviews
+        }));
+      } catch (_) {}
+
+      return parsedReviews;
+    } catch (error) {
+      console.warn("[GitHubApiClient] Could not fetch approved reviews from GitHub Issues:", error);
+      return [];
+    }
+  }
+
+  parseReviewIssue(issue) {
+    if (!issue || !issue.body) return null;
+    const body = issue.body;
+
+    const extractField = (pattern, fallback = "") => {
+      const match = body.match(pattern);
+      return match ? match[1].replace(/\*\*/g, "").trim() : fallback;
+    };
+
+    const rawCategory = extractField(/(?:category|type)\*{0,2}:\s*(.+)/i, "independent").toLowerCase();
+    const role = extractField(/(?:role\s*\/\s*affiliation|role)\*{0,2}:\s*(.+)/i, "Collaborator");
+    const metric = extractField(/(?:outcome\s*\/\s*metric|metric)\*{0,2}:\s*(.+)/i, "");
+    const repoMatch = body.match(/(?:repo|repository)\*{0,2}:\s*([a-zA-Z0-9_\-]+)/i);
+    const repoName = repoMatch ? repoMatch[1].trim() : "";
+
+    const ratingMatch = body.match(/rating\*{0,2}:\s*(\d)/i);
+    const rating = ratingMatch ? Math.min(5, Math.max(1, parseInt(ratingMatch[1], 10))) : 5;
+
+    let content = "";
+    const endorsementMatch = body.match(/###\s*(?:Detailed\s*)?Endorsement[\r\n]+([\s\S]+?)(?:---|\n###|$)/i);
+    if (endorsementMatch) {
+      content = endorsementMatch[1].replace(/^[>\s]+/gm, "").trim();
+    } else {
+      content = body.slice(0, 500).trim();
+    }
+
+    if (!content || content.length < 10) return null;
+
+    const author = issue.user?.login || "GitHub User";
+    const avatar = issue.user?.avatar_url || `https://github.com/${author}.png`;
+    const profileUrl = issue.user?.html_url || `https://github.com/${author}`;
+
+    let type = "independent";
+    if (rawCategory.includes("private")) type = "private_service";
+    else if (rawCategory.includes("repo") || rawCategory.includes("public") || repoName) type = "public_repo";
+
+    return {
+      id: `gh-${issue.id}`,
+      issueNumber: issue.number,
+      issueUrl: issue.html_url,
+      type: type,
+      repoName: repoName || undefined,
+      projectName: repoName || (type === "private_service" ? "Private Service Contract" : "Independent Developer Review"),
+      author: author,
+      handle: `@${author}`,
+      role: role,
+      avatar: avatar,
+      profileUrl: profileUrl,
+      rating: rating,
+      verified: true,
+      isGitHubVerified: true,
+      date: new Date(issue.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" }),
+      content: content,
+      telemetry: metric
+        ? { metric: "Outcome", value: metric, badge: "GitHub Verified" }
+        : { metric: "Identity", value: "GitHub Verified", badge: "Live Issue" }
+    };
+  }
+
   getCache() {
     try {
       const item = localStorage.getItem(this.cacheKey);
@@ -76,6 +188,7 @@ class GitHubApiClient {
   clearCache() {
     try {
       localStorage.removeItem(this.cacheKey);
+      localStorage.removeItem(`gh_reviews_cache_${this.username}`);
     } catch (_) {}
   }
 }
