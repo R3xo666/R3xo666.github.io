@@ -793,21 +793,80 @@ function showToast(message) {
   }, 3000);
 }
 
-// Terminal Simulation
+// Terminal Extreme Reactor Overclock Simulation
 function initTerminalSimulation() {
   const runBtn = document.getElementById("term-run-btn");
   const outputEl = document.getElementById("term-output");
+  const termCard = document.getElementById("terminal-card");
   if (!runBtn || !outputEl) return;
 
-  runBtn.addEventListener("click", () => {
+  let isRunning = false;
+
+  const sequence = [
+    { text: "[CRITICAL_INIT] ⚡ Overclocking Vibe Core v3.12-PyEngine...", color: "text-amber-400 font-bold", delay: 280 },
+    { text: ">>> [REACTOR CORE]: Injecting async worker pools [CONCURRENCY: MAX_THREADS]", color: "text-rose-400 font-semibold", delay: 320 },
+    { text: ">>> [VOLTAGE SPIKE]: Memory bypass engaged. Allocating zero-latency buffers...", color: "text-purple-400", delay: 300 },
+    { text: "→ Hardware Arch: Fedora Linux (x86_64) • Wayland Zero-Flicker Daemon", color: "text-sky-300", delay: 260 },
+    { text: "→ Async Pipeline: Python 3.12+ • EventLoop Stream [128.4k evt/s]", color: "text-indigo-300", delay: 260 },
+    { text: "→ OWASP Armor: CWE-1236 & Prompt Injection Defense ACTIVE", color: "text-emerald-300", delay: 240 },
+    { text: ">>> [STABILIZATION]: Pressure normalized. Thermal equilibrium restored.", color: "text-cyan-400 font-mono", delay: 350 },
+    { text: "✓ STATUS 200 OK: Core operational. Ready for complex micro-SaaS pipelines.", color: "text-emerald-400 font-bold text-sm bg-emerald-950/40 p-2 rounded border border-emerald-500/40 mt-2 shadow-[0_0_20px_rgba(16,185,129,0.3)]", delay: 200 }
+  ];
+
+  runBtn.addEventListener("click", async () => {
+    if (isRunning) return;
+    isRunning = true;
+
+    // Button states
+    const originalText = runBtn.innerHTML;
+    runBtn.disabled = true;
+    runBtn.innerHTML = `<span class="inline-block w-2 h-2 rounded-full bg-rose-500 animate-ping mr-1"></span><span class="text-rose-400 font-bold">IGNITING...</span>`;
+
+    // Trigger Extreme Reactor Screen Shake & Shockwave on Terminal Card
+    if (termCard) {
+      termCard.classList.remove("terminal-stabilized");
+      termCard.classList.add("terminal-ignited", "scanline-overlay");
+    }
+
     outputEl.classList.remove("hidden");
-    outputEl.innerHTML = `
-      <div class="text-zinc-400 font-mono">[+] Running developer.py environment check...</div>
-      <div class="text-zinc-300 mt-1 font-mono">→ System: Fedora Linux (x86_64) • Wayland</div>
-      <div class="text-zinc-300 font-mono">→ Core: Python 3.12+ • AsyncIO • Pydantic v2</div>
-      <div class="text-zinc-300 font-mono">→ Security: OWASP CWE-1236 Neutralized</div>
-      <div class="text-emerald-400 mt-1 font-mono">✓ Operational. Ready for complex micro-SaaS pipelines.</div>
-    `;
+    outputEl.innerHTML = `<div class="text-zinc-500 font-mono flex items-center gap-2 mb-2"><span class="cursor-blink"></span> Initializing system ignition sequence...</div>`;
+
+    // Multi-stage typewriter sequence
+    for (let i = 0; i < sequence.length; i++) {
+      const step = sequence[i];
+      await new Promise((resolve) => setTimeout(resolve, step.delay));
+
+      const lineEl = document.createElement("div");
+      lineEl.className = `font-mono text-xs leading-relaxed transition-all duration-150 transform translate-y-1 opacity-0 ${step.color}`;
+      lineEl.innerHTML = step.text;
+      outputEl.appendChild(lineEl);
+
+      // Trigger enter animation
+      requestAnimationFrame(() => {
+        lineEl.classList.remove("translate-y-1", "opacity-0");
+      });
+
+      // Subtle pulse during middle reactor critical phase
+      if (i === 1 && termCard) {
+        showToast("⚠️ WARNING: High thermal velocity detected!");
+      }
+    }
+
+    // Stabilize reactor after sequence completes
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    if (termCard) {
+      termCard.classList.remove("terminal-ignited");
+      termCard.classList.add("terminal-stabilized");
+    }
+
+    runBtn.innerHTML = `<span class="text-emerald-400 font-semibold">✓ Overclocked</span>`;
+    showToast("⚡ Core Overclock Successful: System Stabilized!");
+
+    setTimeout(() => {
+      runBtn.innerHTML = originalText;
+      runBtn.disabled = false;
+      isRunning = false;
+    }, 4500);
   });
 }
 
