@@ -204,14 +204,14 @@ function createAceternityProjectCard(p) {
           ${tagsHtml}
         </div>
 
-        <div class="pt-4 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-2 text-xs text-zinc-400 min-w-0">
+        <div class="pt-4 border-t border-zinc-800/80 flex items-center justify-between gap-4 text-xs font-mono">
+          <div class="flex items-center gap-2 text-zinc-400 shrink-0 whitespace-nowrap">
             <span class="w-2 h-2 shrink-0 rounded-full bg-emerald-400"></span>
-            <span class="font-mono text-zinc-300 font-medium">Python</span>
-            ${p.liveUpdated ? `<span class="text-zinc-500 font-sans text-[11px] truncate">• ${p.liveUpdated}</span>` : ""}
+            <span class="text-zinc-300 font-medium">Python</span>
+            ${p.liveUpdated ? `<span class="text-zinc-500 font-sans text-[11px] whitespace-nowrap">&bull;&nbsp;${p.liveUpdated}</span>` : ""}
           </div>
           <a href="${p.githubUrl}" target="_blank" rel="noopener noreferrer" 
-             class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 hover:text-white transition-all duration-200 border border-zinc-700 hover:border-zinc-500 shadow-sm">
+             class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 hover:text-white transition-all duration-200 border border-zinc-700 hover:border-zinc-500 shadow-sm ml-auto whitespace-nowrap">
             <span>Repository</span>
             <span class="text-zinc-400 group-hover:translate-x-0.5 transition-transform">↗</span>
           </a>
@@ -247,7 +247,7 @@ function initProjectFilters() {
   });
 }
 
-// Render Skills Matrix (Aceternity Editorial Layout)
+// Render Skills Matrix (Aceternity Editorial Layout with strict CSS grid alignment)
 function renderSkills() {
   const container = document.getElementById("skills-container");
   if (!container) return;
@@ -256,25 +256,24 @@ function renderSkills() {
   container.innerHTML = data.skills
     .map(
       (cat) => `
-    <div class="aceternity-card p-6 flex flex-col justify-between">
+    <div class="aceternity-card p-5 sm:p-6 flex flex-col justify-between">
       <div>
         <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4 pb-2 border-b border-zinc-800 flex items-center justify-between">
           <span>${cat.category}</span>
           <span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span>
         </h3>
-        <div class="space-y-3">
+        <div class="space-y-2">
           ${cat.items
             .map(
               (item) => `
-            <div class="p-3 rounded-xl bg-black/40 border border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-900/50 transition-all duration-200 group/item">
-              <div class="flex items-center justify-between gap-2 mb-1.5">
-                <div class="flex items-center gap-2 min-w-0">
-                  <span class="w-1.5 h-1.5 shrink-0 rounded-full ${item.highlight ? "bg-emerald-400 ring-2 ring-emerald-400/20" : "bg-zinc-600"}"></span>
-                  <span class="text-xs sm:text-sm font-semibold truncate ${item.highlight ? "text-white" : "text-zinc-200 group-hover/item:text-white"}">${item.name}</span>
-                </div>
-                ${item.highlight ? `<span class="shrink-0 text-[10px] font-mono tracking-wider uppercase px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Core</span>` : ""}
+            <div class="grid grid-cols-[1fr_auto] items-center gap-3 py-2 px-2.5 rounded-lg hover:bg-zinc-900/60 transition-colors w-full group/skill">
+              <div class="flex items-center gap-2.5 min-w-0 pr-1">
+                <span class="w-1.5 h-1.5 shrink-0 rounded-full ${item.highlight ? "bg-emerald-400 ring-2 ring-emerald-400/30" : "bg-zinc-600"}"></span>
+                <span class="text-xs sm:text-sm font-medium ${item.highlight ? "text-white font-semibold" : "text-zinc-300 group-hover/skill:text-white"} truncate">${item.name}</span>
               </div>
-              <p class="text-[11px] text-zinc-400 font-mono pl-3.5 leading-snug">${item.level}</p>
+              <span class="shrink-0 text-[11px] font-mono text-zinc-400 bg-zinc-900/90 px-2.5 py-1 rounded-md border border-zinc-800/90 whitespace-nowrap text-right justify-self-end">
+                ${item.level}
+              </span>
             </div>
           `
             )
