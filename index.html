@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aditya Kumar (@R3xo666) — Python Systems & Automation Architect</title>
-  <meta name="description" content="Portfolio of Aditya Kumar (R3xo666) — Python developer specializing in micro-SaaS data pipelines, document extractors with OWASP defense, and 24/7 background monitors.">
+  <title>Aditya Kumar (@R3xo666) — Python Systems & Automation</title>
+  <meta name="description" content="Portfolio of Aditya Kumar (R3xo666) — Python engineer specializing in micro-SaaS data pipelines, document extractors with OWASP defense, and 24/7 financial daemons.">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   
-  <!-- Inter & JetBrains Mono Fonts for Legibility -->
+  <!-- Inter & JetBrains Mono Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -22,268 +22,239 @@
           fontFamily: {
             sans: ['Inter', 'sans-serif'],
             mono: ['JetBrains Mono', 'monospace'],
-          },
-          colors: {
-            titanium: {
-              50: '#f8fafc',
-              100: '#f1f5f9',
-              200: '#e2e8f0',
-              300: '#cbd5e1',
-              400: '#94a3b8',
-              500: '#64748b',
-              600: '#475569',
-              700: '#334155',
-              800: '#1e293b',
-              900: '#0f172a',
-            }
           }
         }
       }
     }
   </script>
 
-  <!-- Typography & WCAG Compliant Glass Styles -->
+  <!-- Aceternity Startup Theme CSS -->
   <link rel="stylesheet" href="css/custom.css">
 </head>
-<body class="bg-[#07090e] text-[#f8fafc] min-h-screen flex flex-col antialiased selection:bg-blue-500/30 selection:text-blue-100">
+<body class="bg-[#000000] text-[#fafafa] min-h-screen flex flex-col antialiased selection:bg-zinc-800 selection:text-white">
 
-  <!-- Skip Link for Accessibility (WCAG 2.2 AA) -->
-  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-[1000] px-4 py-2 bg-blue-600 text-white rounded-lg font-medium text-xs">
-    Skip to main content
-  </a>
+  <!-- Aceternity Mouse Spotlight Glow -->
+  <div id="aceternity-spotlight" aria-hidden="true"></div>
 
-  <!-- Ambient Dynamic Spotlight -->
-  <div id="ambient-glow" aria-hidden="true"></div>
+  <!-- Background Grid with Radial Fade -->
+  <div class="fixed inset-0 bg-grid-pattern pointer-events-none radial-mask z-0 opacity-40"></div>
 
-  <!-- Toast Container -->
-  <div id="toast" role="status" aria-live="polite">Copied to clipboard!</div>
+  <!-- Toast Notification Container -->
+  <div id="toast" role="status" aria-live="polite">Copied to clipboard</div>
 
-  <!-- Header / Navigation -->
-  <header class="sticky top-4 z-50 px-4 max-w-5xl mx-auto w-full" role="banner">
-    <nav class="glass-navbar rounded-2xl px-5 py-3.5 flex items-center justify-between" aria-label="Main Navigation">
+  <!-- Floating Aceternity Header Navbar -->
+  <header class="sticky top-6 z-50 px-4 max-w-4xl mx-auto w-full">
+    <nav class="aceternity-nav rounded-full px-4 py-2 flex items-center justify-between shadow-2xl">
       
-      <!-- Logo / Identity -->
-      <a href="#overview" class="flex items-center gap-3 group focus-visible:ring-2 focus-visible:ring-blue-400 rounded-xl p-1" aria-label="Aditya Kumar Home">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center font-bold text-white text-sm shadow-lg shadow-blue-500/20 group-hover:scale-105 transition">
+      <!-- Brand Logo / Badge -->
+      <a href="#overview" class="flex items-center gap-2.5 px-2 py-1 rounded-full group focus-visible:ring-1 focus-visible:ring-white">
+        <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center font-bold text-black text-xs font-mono">
           R
         </div>
-        <div>
-          <span class="font-bold text-sm tracking-tight text-white group-hover:text-blue-400 transition">Aditya Kumar</span>
-          <span class="text-xs text-slate-400 block -mt-0.5 font-mono">@R3xo666</span>
-        </div>
+        <span class="font-semibold text-xs tracking-tight text-white group-hover:text-zinc-300 transition">Aditya Kumar</span>
       </a>
 
-      <!-- Navigation Tabs (WCAG Tablist Pattern) -->
-      <div class="flex items-center gap-1.5 text-xs font-medium" role="tablist" aria-label="Portfolio Views">
-        <button role="tab" aria-selected="true" aria-controls="tab-overview" class="nav-pill active px-3.5 py-1.5 rounded-xl border border-transparent hover:border-white/10 hover:text-white text-slate-300 transition" data-tab="tab-overview">
+      <!-- Navigation Tabs (Pill Structure) -->
+      <div class="flex items-center gap-1 text-xs" role="tablist">
+        <button role="tab" aria-selected="true" class="nav-pill active px-3 py-1 rounded-full border border-transparent font-medium" data-tab="tab-overview">
           Overview
         </button>
-        <button role="tab" aria-selected="false" aria-controls="tab-projects" class="nav-pill px-3.5 py-1.5 rounded-xl border border-transparent hover:border-white/10 hover:text-white text-slate-300 transition" data-tab="tab-projects">
+        <button role="tab" aria-selected="false" class="nav-pill px-3 py-1 rounded-full border border-transparent font-medium" data-tab="tab-projects">
           Projects
         </button>
-        <button role="tab" aria-selected="false" aria-controls="tab-about" class="nav-pill px-3.5 py-1.5 rounded-xl border border-transparent hover:border-white/10 hover:text-white text-slate-300 transition" data-tab="tab-about">
-          About & Arsenal
+        <button role="tab" aria-selected="false" class="nav-pill px-3 py-1 rounded-full border border-transparent font-medium" data-tab="tab-about">
+          About
         </button>
-        <button role="tab" aria-selected="false" aria-controls="tab-contact" class="nav-pill px-3.5 py-1.5 rounded-xl border border-transparent hover:border-white/10 hover:text-white text-slate-300 transition" data-tab="tab-contact">
+        <button role="tab" aria-selected="false" class="nav-pill px-3 py-1 rounded-full border border-transparent font-medium" data-tab="tab-contact">
           Contact
         </button>
       </div>
 
-      <!-- Quick External Link -->
-      <div class="hidden sm:flex items-center gap-2">
-        <a href="https://github.com/R3xo666" target="_blank" rel="noopener noreferrer" 
-           class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-slate-200 hover:text-white transition border border-white/[0.08]"
-           aria-label="GitHub Profile (opens in new tab)">
-          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-          <span>GitHub</span>
-          <span class="text-slate-400">↗</span>
-        </a>
-      </div>
+      <!-- GitHub Action Pill -->
+      <a href="https://github.com/R3xo666" target="_blank" rel="noopener noreferrer" 
+         class="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium px-3.5 py-1 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white transition border border-zinc-800">
+        <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        <span>GitHub</span>
+        <span class="text-zinc-500">↗</span>
+      </a>
 
     </nav>
   </header>
 
   <!-- Main Body Content -->
-  <main id="main-content" class="flex-grow max-w-5xl mx-auto w-full px-4 pt-10 pb-20 relative z-10" role="main">
+  <main class="flex-grow max-w-4xl mx-auto w-full px-4 pt-12 pb-24 relative z-10">
 
     <!-- ==================== VIEW 1: OVERVIEW / LANDING ==================== -->
-    <section id="tab-overview" role="tabpanel" aria-labelledby="tab-overview" class="tab-content active space-y-12">
+    <section id="tab-overview" class="tab-content active space-y-14">
       
-      <!-- Hero Section -->
-      <div class="relative pt-6 pb-2">
+      <!-- Hero Section (Aceternity Startup Minimalist Style) -->
+      <div class="text-center pt-8 pb-4 max-w-2xl mx-auto">
         
-        <!-- Live Status Pills -->
-        <div class="flex flex-wrap items-center gap-2 mb-6">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>Available for Micro-SaaS & Automation Pipelines</span>
-          </div>
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono font-medium">
-            <span>🚀 Vibe Coder & Continuous Learner</span>
-          </div>
+        <!-- Live Status Pill -->
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs font-medium mb-6">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span>Open for micro-SaaS & automation projects</span>
+          <span class="text-zinc-600">•</span>
+          <span class="text-zinc-400 font-mono">vibe coder</span>
         </div>
 
-        <!-- Headline (Clamped typography from web-typography-skill) -->
-        <h1 class="type-headline text-white">
-          Engineering software at the intersection of <span class="bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">AI leverage</span> & clean architecture.
+        <!-- Headline with Subtle Clean White/Silver Hierarchy -->
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.12]">
+          Building software with <span class="text-zinc-400">AI velocity</span> and architectural discipline.
         </h1>
 
-        <!-- Reading Measure Constrained (66ch) -->
-        <p class="type-body mt-6 text-slate-300">
-          Hey, I'm <strong class="text-white font-semibold">Aditya Kumar</strong>. I architect and build production-ready Python backends: 
-          fault-tolerant web crawlers, layout-aware PDF invoice extractors with active formula injection defense, and 24/7 financial price daemons with zero API keys. 
-          Proudly coding as a modern <strong>vibe coder</strong>—pairing deep intuition and AI velocity with mathematical verification and clean code discipline.
+        <!-- Subheadline -->
+        <p class="mt-6 text-sm sm:text-base text-zinc-400 leading-relaxed max-w-xl mx-auto">
+          Hey, I'm <strong class="text-zinc-100 font-semibold">Aditya Kumar</strong>. I engineer resilient Python systems: 
+          document extractors with OWASP defense, financial daemons with zero API keys, and polite web crawlers. 
+          Building in the open as an ambitious vibe coder and continuous learner.
         </p>
 
-        <!-- CTA Action Buttons -->
-        <div class="mt-8 flex flex-wrap items-center gap-3">
-          <button data-navigate="tab-projects" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition shadow-lg shadow-blue-500/25 flex items-center gap-2">
+        <!-- CTA Buttons -->
+        <div class="mt-8 flex items-center justify-center gap-3">
+          <button data-navigate="tab-projects" class="aceternity-btn-primary px-5 py-2.5 text-xs font-semibold flex items-center gap-2">
             <span>Explore Projects</span>
             <span>→</span>
           </button>
-          <button data-navigate="tab-about" class="px-5 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-slate-200 hover:text-white font-semibold text-sm transition border border-white/[0.08] flex items-center gap-2">
-            <span>Architecture & Arsenal</span>
+          <button data-navigate="tab-about" class="aceternity-btn-secondary px-5 py-2.5 text-xs font-medium">
+            <span>Engineering Arsenal</span>
           </button>
-          <a href="https://github.com/R3xo666" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] text-slate-400 hover:text-slate-200 font-mono text-sm transition border border-white/[0.05]">
-            github.com/R3xo666 ↗
-          </a>
         </div>
+
       </div>
 
-      <!-- Live Terminal / Code Card -->
-      <div class="terminal-card rounded-2xl overflow-hidden" aria-label="Simulated Python Terminal">
-        <div class="px-4 py-3 bg-black/50 border-b border-white/[0.08] flex items-center justify-between">
+      <!-- Terminal Runtime Card -->
+      <div class="aceternity-card overflow-hidden">
+        <div class="px-4 py-3 bg-black/60 border-b border-zinc-800 flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-rose-500/80 inline-block" aria-hidden="true"></span>
-            <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block" aria-hidden="true"></span>
-            <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block" aria-hidden="true"></span>
-            <span class="text-xs font-mono text-slate-400 ml-2">adi@fedora: ~/developer.py</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-zinc-700 inline-block"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-zinc-700 inline-block"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-zinc-700 inline-block"></span>
+            <span class="text-xs font-mono text-zinc-500 ml-2">adi@fedora: ~/developer.py</span>
           </div>
-          <button id="term-run-btn" class="text-xs font-mono px-3 py-1 rounded bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30 transition flex items-center gap-1.5" aria-label="Run simulated developer runtime test">
-            <span>▶ Run File</span>
+          <button id="term-run-btn" class="text-xs font-mono px-3 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition flex items-center gap-1.5">
+            <span>Run Check</span>
           </button>
         </div>
 
-        <div class="p-5 font-mono text-xs sm:text-sm text-slate-300 leading-relaxed overflow-x-auto">
-          <pre><code><span class="text-purple-400">class</span> <span class="text-yellow-300">SoftwareArchitect</span>:
-    <span class="text-purple-400">def</span> <span class="text-blue-400">__init__</span>(self):
-        self.name = <span class="text-emerald-300">"Aditya Kumar"</span>
-        self.handle = <span class="text-emerald-300">"R3xo666"</span>
-        self.mindset = <span class="text-emerald-300">"Vibe Coder & Continuous Learner 🚀"</span>
-        self.daily_os = <span class="text-emerald-300">"Fedora Linux / Wayland"</span>
-        self.primary_stack = [<span class="text-emerald-300">"Python 3.12+"</span>, <span class="text-emerald-300">"AsyncIO"</span>, <span class="text-emerald-300">"Pydantic v2"</span>, <span class="text-emerald-300">"openpyxl"</span>]
+        <div class="p-5 font-mono text-xs text-zinc-300 leading-relaxed overflow-x-auto bg-[#050507]">
+          <pre><code><span class="text-zinc-500"># Engineering invariants & stack</span>
+developer = {
+    <span class="text-zinc-400">"name"</span>: <span class="text-zinc-200">"Aditya Kumar (@R3xo666)"</span>,
+    <span class="text-zinc-400">"mindset"</span>: <span class="text-zinc-200">"Vibe Coder & Continuous Learner 🚀"</span>,
+    <span class="text-zinc-400">"daily_driver"</span>: <span class="text-zinc-200">"Fedora Linux / Wayland"</span>,
+    <span class="text-zinc-400">"stack"</span>: [<span class="text-zinc-200">"Python 3.12+"</span>, <span class="text-zinc-200">"AsyncIO"</span>, <span class="text-zinc-200">"Pydantic v2"</span>, <span class="text-zinc-200">"openpyxl"</span>],
+    <span class="text-zinc-400">"invariants"</span>: {
+        <span class="text-zinc-400">"zero_hardcoding"</span>: <span class="text-emerald-400">True</span>,       <span class="text-zinc-600"># Driven via .env & config.json</span>
+        <span class="text-zinc-400">"owasp_defended"</span>: <span class="text-emerald-400">True</span>,        <span class="text-zinc-600"># CWE-1236 Formula Injection Defense</span>
+        <span class="text-zinc-400">"resilient_backoff"</span>: <span class="text-emerald-400">True</span>,     <span class="text-zinc-600"># Exponential jitter on 429/drops</span>
+        <span class="text-zinc-400">"sigint_state_flush"</span>: <span class="text-emerald-400">True</span>     <span class="text-zinc-600"># Graceful interrupt handler</span>
+    }
+}</code></pre>
 
-    <span class="text-purple-400">def</span> <span class="text-blue-400">engineering_invariants</span>(self):
-        <span class="text-purple-400">return</span> {
-            <span class="text-cyan-300">"zero_hardcoding"</span>: <span class="text-amber-300">True</span>,       <span class="text-slate-500"># Driven via .env & config.json</span>
-            <span class="text-cyan-300">"owasp_defenses"</span>: <span class="text-amber-300">True</span>,        <span class="text-slate-500"># CWE-1236 Formula Injection Neutralized</span>
-            <span class="text-cyan-300">"resilient_retries"</span>: <span class="text-amber-300">True</span>,     <span class="text-slate-500"># Exponential backoff with jitter</span>
-            <span class="text-cyan-300">"signal_trapping"</span>: <span class="text-amber-300">True</span>        <span class="text-slate-500"># Graceful SIGINT flushes state before exit</span>
-        }</code></pre>
-
-          <div id="term-output" class="hidden mt-4 pt-4 border-t border-white/[0.08] font-mono text-xs" role="region" aria-live="polite"></div>
+          <div id="term-output" class="hidden mt-4 pt-4 border-t border-zinc-800/80 font-mono text-xs"></div>
         </div>
       </div>
 
-      <!-- Verified Metrics Grid -->
+      <!-- Minimalist Numbers Banner -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="glass-panel rounded-2xl p-4 text-center">
-          <div class="text-2xl sm:text-3xl font-extrabold text-white">3</div>
-          <div class="text-xs text-slate-400 mt-1 font-medium">Published Micro-SaaS Repos</div>
+        <div class="aceternity-card p-5 text-center">
+          <div class="text-2xl font-bold text-white font-mono">3</div>
+          <div class="text-xs text-zinc-500 mt-1">Live Micro-SaaS Repos</div>
         </div>
-        <div class="glass-panel rounded-2xl p-4 text-center">
-          <div class="text-2xl sm:text-3xl font-extrabold text-emerald-400">100%</div>
-          <div class="text-xs text-slate-400 mt-1 font-medium">Automated Test Pass Rate</div>
+        <div class="aceternity-card p-5 text-center">
+          <div class="text-2xl font-bold text-white font-mono">100%</div>
+          <div class="text-xs text-zinc-500 mt-1">Test Pass Rate (Pytest)</div>
         </div>
-        <div class="glass-panel rounded-2xl p-4 text-center">
-          <div class="text-2xl sm:text-3xl font-extrabold text-blue-400">OWASP</div>
-          <div class="text-xs text-slate-400 mt-1 font-medium">CWE-1236 Defenses Active</div>
+        <div class="aceternity-card p-5 text-center">
+          <div class="text-2xl font-bold text-white font-mono">CWE-1236</div>
+          <div class="text-xs text-zinc-500 mt-1">OWASP Defense Built-in</div>
         </div>
-        <div class="glass-panel rounded-2xl p-4 text-center">
-          <div class="text-2xl sm:text-3xl font-extrabold text-cyan-400">&lt;25MB</div>
-          <div class="text-xs text-slate-400 mt-1 font-medium">Ultra-Lightweight Daemons</div>
+        <div class="aceternity-card p-5 text-center">
+          <div class="text-2xl font-bold text-white font-mono">&lt;25 MB</div>
+          <div class="text-xs text-zinc-500 mt-1">Daemon Memory Footprint</div>
         </div>
       </div>
 
     </section>
 
     <!-- ==================== VIEW 2: PROJECTS VIEW ==================== -->
-    <section id="tab-projects" role="tabpanel" aria-labelledby="tab-projects" class="tab-content space-y-8">
+    <section id="tab-projects" class="tab-content space-y-8">
       
-      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-white/[0.06]">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-zinc-800">
         <div>
-          <span class="text-xs font-mono uppercase tracking-wider text-blue-400 font-bold">Showcase & Live GitHub Sync</span>
-          <h2 class="type-subhead text-white mt-1">Featured Micro-SaaS & Engineering Work</h2>
-          <p class="type-body text-sm mt-1">Live synchronized from GitHub. Built with Clean Architecture, Pydantic v2 schemas, and zero hardcoding.</p>
+          <span class="text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold">Featured Work</span>
+          <h2 class="text-2xl font-bold text-white mt-1">Micro-SaaS & Automation Projects</h2>
+          <p class="text-xs text-zinc-400 mt-1">Synchronized directly with GitHub REST API v3.</p>
         </div>
 
-        <!-- Filter Buttons -->
-        <div class="flex items-center gap-1.5 flex-wrap" role="group" aria-label="Project Category Filters">
-          <button class="filter-btn active text-xs font-medium px-3.5 py-1.5 rounded-lg bg-blue-600 text-white transition" data-filter="all">All</button>
-          <button class="filter-btn text-xs font-medium px-3.5 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 transition" data-filter="crypto">Crypto</button>
-          <button class="filter-btn text-xs font-medium px-3.5 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 transition" data-filter="pdfplumber">Document</button>
-          <button class="filter-btn text-xs font-medium px-3.5 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 transition" data-filter="web-scraping">Scraping</button>
+        <!-- Filter Controls -->
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <button class="filter-btn active text-xs font-medium px-3 py-1 rounded-lg bg-zinc-100 text-black border border-white transition" data-filter="all">All</button>
+          <button class="filter-btn text-xs font-medium px-3 py-1 rounded-lg bg-zinc-900 text-zinc-400 border border-zinc-800 hover:border-zinc-700 transition" data-filter="crypto">Crypto</button>
+          <button class="filter-btn text-xs font-medium px-3 py-1 rounded-lg bg-zinc-900 text-zinc-400 border border-zinc-800 hover:border-zinc-700 transition" data-filter="pdfplumber">Document</button>
+          <button class="filter-btn text-xs font-medium px-3 py-1 rounded-lg bg-zinc-900 text-zinc-400 border border-zinc-800 hover:border-zinc-700 transition" data-filter="web-scraping">Scraping</button>
         </div>
       </div>
 
-      <!-- Dynamic Projects Grid (Injected via JS) -->
-      <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" aria-live="polite">
-        <div class="col-span-full py-12 text-center text-slate-400 text-sm">
-          Loading synchronized repositories from GitHub API...
+      <!-- Dynamic Projects Container -->
+      <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="col-span-full py-12 text-center text-zinc-500 text-xs font-mono">
+          Fetching live repositories from GitHub...
         </div>
       </div>
 
     </section>
 
     <!-- ==================== VIEW 3: ABOUT & ARSENAL ==================== -->
-    <section id="tab-about" role="tabpanel" aria-labelledby="tab-about" class="tab-content space-y-10">
+    <section id="tab-about" class="tab-content space-y-8">
       
-      <div>
-        <span class="text-xs font-mono uppercase tracking-wider text-blue-400 font-bold">Philosophy & Technical Arsenal</span>
-        <h2 class="type-subhead text-white mt-1">Senior Architecture with Vibe Coder Agility</h2>
+      <div class="pb-4 border-b border-zinc-800">
+        <span class="text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold">Philosophy & Stack</span>
+        <h2 class="text-2xl font-bold text-white mt-1">The Vibe Coder Architecture</h2>
       </div>
 
-      <!-- The Vibe Coder Philosophy Card -->
-      <div class="glass-panel rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+      <!-- Vibe Coder Card -->
+      <div class="aceternity-card p-6 sm:p-7">
         <div class="flex items-center gap-2 mb-3">
-          <span class="text-xl">🚀</span>
-          <h3 class="text-lg font-bold text-white">The "Vibe Coder" Paradigm</h3>
+          <span class="text-base">🚀</span>
+          <h3 class="text-base font-bold text-white">The "Vibe Coder" Paradigm</h3>
         </div>
-        <p class="type-body text-sm leading-relaxed mb-4">
-          I describe myself as a <strong class="text-white">vibe coder and continuous learner</strong> because I believe software engineering is experiencing a historic phase shift. 
-          Instead of typing repetitive boilerplate by hand, I use modern AI agents to move at lightning speed, while maintaining uncompromising responsibility over 
-          <strong>clean software architecture, fault-tolerant edge cases, and automated test verification</strong>.
+        <p class="text-xs sm:text-sm text-zinc-400 leading-relaxed mb-4">
+          I embrace the label <strong class="text-zinc-200">vibe coder and continuous learner</strong> because software engineering is entering an era of unprecedented leverage. 
+          Instead of spending days handwriting repetitive boilerplate, I use state-of-the-art AI pair-programming to move at 10x speed, while dedicating my focus to what actually matters: 
+          <strong>fault tolerance, modular architecture, and automated test suites</strong>.
         </p>
-        <p class="type-body text-sm leading-relaxed">
-          Every tool I build is guided by three non-negotiable rules:
-          <strong class="text-white">Zero Hardcoding</strong> (everything configurable via CLI arguments and environment variables), 
-          <strong class="text-white">Graceful Degradation</strong> (never crash on malformed inputs), and 
-          <strong class="text-white">Active Security</strong> (neutralizing injection and DoS vectors).
+        <p class="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+          Every tool I build strictly enforces:
+          <strong class="text-zinc-200">Zero Hardcoding</strong> (configured via CLI arguments and environment variables), 
+          <strong class="text-zinc-200">Resilient Retries</strong> (never crash on network loss), and 
+          <strong class="text-zinc-200">Defensive Data Sanitization</strong> (OWASP CWE-1236 formula defense).
         </p>
       </div>
 
-      <!-- Skills Matrix Grid (Injected via JS) -->
-      <div id="skills-container" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+      <!-- Skills Matrix Container -->
+      <div id="skills-container" class="grid grid-cols-1 md:grid-cols-3 gap-5"></div>
 
-      <!-- Senior Architectural Invariants -->
-      <div class="glass-panel rounded-2xl p-6">
-        <h3 class="text-base font-bold text-white mb-4">Core Architectural Invariants</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm text-slate-300">
-          <div class="p-4 rounded-xl bg-black/25 border border-white/[0.04]">
-            <div class="font-semibold text-white mb-1">🛡️ OWASP CWE-1236 Defense</div>
-            <p class="text-slate-400 leading-relaxed">Active sanitization against dynamic formula injection when exporting user inputs into Excel spreadsheets.</p>
+      <!-- Architecture Invariants -->
+      <div class="aceternity-card p-6">
+        <h3 class="text-sm font-bold text-white mb-4">Engineering Invariants</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-zinc-400">
+          <div class="p-3.5 rounded-lg bg-black/60 border border-zinc-800/80">
+            <div class="font-semibold text-zinc-200 mb-1">🛡️ OWASP CWE-1236 Defense</div>
+            <p class="text-zinc-500">Active sanitization against dynamic formula injection when writing user inputs into Excel workbooks.</p>
           </div>
-          <div class="p-4 rounded-xl bg-black/25 border border-white/[0.04]">
-            <div class="font-semibold text-white mb-1">⚡ Hysteresis Cooldowns</div>
-            <p class="text-slate-400 leading-relaxed">State machines preventing notification storms with dynamic percentage move bypasses.</p>
+          <div class="p-3.5 rounded-lg bg-black/60 border border-zinc-800/80">
+            <div class="font-semibold text-zinc-200 mb-1">⚡ Hysteresis Cooldowns</div>
+            <p class="text-zinc-500">State machines preventing notification storms with dynamic percentage move bypasses.</p>
           </div>
-          <div class="p-4 rounded-xl bg-black/25 border border-white/[0.04]">
-            <div class="font-semibold text-white mb-1">🔄 Connection Pooling & Jitter</div>
-            <p class="text-slate-400 leading-relaxed">Exponential backoff with randomized jitter on network timeouts and upstream 429 rate limits.</p>
+          <div class="p-3.5 rounded-lg bg-black/60 border border-zinc-800/80">
+            <div class="font-semibold text-zinc-200 mb-1">🔄 Connection Pooling & Jitter</div>
+            <p class="text-zinc-500">Exponential backoff with randomized jitter on network timeouts and upstream 429 rate limits.</p>
           </div>
-          <div class="p-4 rounded-xl bg-black/25 border border-white/[0.04]">
-            <div class="font-semibold text-white mb-1">🛑 Graceful SIGINT Trapping</div>
-            <p class="text-slate-400 leading-relaxed">Interruption signal handlers safely flushing accumulated in-memory buffers to disk before clean exit.</p>
+          <div class="p-3.5 rounded-lg bg-black/60 border border-zinc-800/80">
+            <div class="font-semibold text-zinc-200 mb-1">🛑 Graceful SIGINT Trapping</div>
+            <p class="text-zinc-500">Interruption signal handlers safely flushing accumulated in-memory buffers to disk before clean exit.</p>
           </div>
         </div>
       </div>
@@ -291,104 +262,97 @@
     </section>
 
     <!-- ==================== VIEW 4: CONTACT VIEW ==================== -->
-    <section id="tab-contact" role="tabpanel" aria-labelledby="tab-contact" class="tab-content space-y-10">
+    <section id="tab-contact" class="tab-content space-y-8">
       
-      <div>
-        <span class="text-xs font-mono uppercase tracking-wider text-blue-400 font-bold">Let's Connect</span>
-        <h2 class="type-subhead text-white mt-1">Get in Touch</h2>
-        <p class="type-body text-sm mt-1">Whether you need an automation script, a custom data pipeline, or want to collaborate on open-source systems.</p>
+      <div class="pb-4 border-b border-zinc-800">
+        <span class="text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold">Connect</span>
+        <h2 class="text-2xl font-bold text-white mt-1">Get in Touch</h2>
+        <p class="text-xs text-zinc-400 mt-1">Whether you need an automation script, data extractor, or financial monitor.</p>
       </div>
 
-      <!-- Quick Connect Channels -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         
-        <!-- GitHub Card -->
         <a href="https://github.com/R3xo666" target="_blank" rel="noopener noreferrer" 
-           class="glass-panel rounded-2xl p-5 flex items-center justify-between group"
-           aria-label="GitHub Profile (opens in new tab)">
+           class="aceternity-card p-4 flex items-center justify-between group">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-white/[0.06] flex items-center justify-center text-white">
-              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            <div class="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
             </div>
             <div>
-              <div class="text-xs text-slate-400 font-medium">GitHub Profile</div>
-              <div class="text-sm font-bold text-white group-hover:text-blue-400 transition">github.com/R3xo666</div>
+              <div class="text-[11px] text-zinc-500 font-mono">GITHUB</div>
+              <div class="text-xs font-semibold text-zinc-200 group-hover:text-white transition">github.com/R3xo666</div>
             </div>
           </div>
-          <span class="text-slate-400 group-hover:translate-x-1 transition-transform" aria-hidden="true">↗</span>
+          <span class="text-zinc-500 group-hover:text-zinc-300">↗</span>
         </a>
 
-        <!-- Discord Copy Card -->
-        <button class="glass-panel rounded-2xl p-5 flex items-center justify-between text-left group w-full" data-copy="r3xo666" aria-label="Copy Discord handle to clipboard">
+        <button class="aceternity-card p-4 flex items-center justify-between text-left group w-full" data-copy="r3xo666">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold text-base" aria-hidden="true">
-              🎮
+            <div class="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-xs font-mono text-zinc-300">
+              #
             </div>
             <div>
-              <div class="text-xs text-slate-400 font-medium">Discord Handle</div>
-              <div class="text-sm font-bold text-white group-hover:text-indigo-400 transition">r3xo666</div>
+              <div class="text-[11px] text-zinc-500 font-mono">DISCORD</div>
+              <div class="text-xs font-semibold text-zinc-200 group-hover:text-white transition">r3xo666</div>
             </div>
           </div>
-          <span class="text-xs font-mono text-slate-400 bg-white/[0.05] px-2.5 py-1 rounded border border-white/[0.05]">Copy ID</span>
+          <span class="text-[11px] font-mono text-zinc-500 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">Copy</span>
         </button>
 
-        <!-- Telegram Card -->
         <a href="https://t.me/R3xo666" target="_blank" rel="noopener noreferrer" 
-           class="glass-panel rounded-2xl p-5 flex items-center justify-between group"
-           aria-label="Direct message on Telegram (opens in new tab)">
+           class="aceternity-card p-4 flex items-center justify-between group">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center font-bold text-base" aria-hidden="true">
-              ✈️
+            <div class="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-xs font-mono text-zinc-300">
+              @
             </div>
             <div>
-              <div class="text-xs text-slate-400 font-medium">Telegram Direct</div>
-              <div class="text-sm font-bold text-white group-hover:text-cyan-400 transition">@R3xo666</div>
+              <div class="text-[11px] text-zinc-500 font-mono">TELEGRAM</div>
+              <div class="text-xs font-semibold text-zinc-200 group-hover:text-white transition">@R3xo666</div>
             </div>
           </div>
-          <span class="text-slate-400 group-hover:translate-x-1 transition-transform" aria-hidden="true">↗</span>
+          <span class="text-zinc-500 group-hover:text-zinc-300">↗</span>
         </a>
 
-        <!-- Email Copy Card -->
-        <button class="glass-panel rounded-2xl p-5 flex items-center justify-between text-left group w-full" data-copy="contact.r3xo666@gmail.com" aria-label="Copy Email address to clipboard">
+        <button class="aceternity-card p-4 flex items-center justify-between text-left group w-full" data-copy="contact.r3xo666@gmail.com">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-base" aria-hidden="true">
-              ✉️
+            <div class="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-xs font-mono text-zinc-300">
+              ✉
             </div>
             <div>
-              <div class="text-xs text-slate-400 font-medium">Direct Email</div>
-              <div class="text-sm font-bold text-white group-hover:text-emerald-400 transition">contact.r3xo666@gmail.com</div>
+              <div class="text-[11px] text-zinc-500 font-mono">EMAIL</div>
+              <div class="text-xs font-semibold text-zinc-200 group-hover:text-white transition">contact.r3xo666@gmail.com</div>
             </div>
           </div>
-          <span class="text-xs font-mono text-slate-400 bg-white/[0.05] px-2.5 py-1 rounded border border-white/[0.05]">Copy</span>
+          <span class="text-[11px] font-mono text-zinc-500 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">Copy</span>
         </button>
 
       </div>
 
-      <!-- Contact Inquiry Form -->
-      <div class="glass-panel rounded-2xl p-6 sm:p-8">
-        <h3 class="text-lg font-bold text-white mb-2">Send a Direct Message</h3>
-        <p class="text-xs text-slate-400 mb-6">Need a custom bot or data extractor? Leave a message here.</p>
+      <!-- Quick Message Form -->
+      <div class="aceternity-card p-6 sm:p-7">
+        <h3 class="text-sm font-bold text-white mb-1">Direct Inquiry</h3>
+        <p class="text-xs text-zinc-500 mb-5">Leave a message regarding a micro-SaaS or data extraction project.</p>
 
-        <form id="contact-form" class="space-y-4" aria-label="Contact Message Form">
+        <form id="contact-form" class="space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label for="input-name" class="block text-xs font-mono text-slate-400 mb-1.5">YOUR NAME</label>
+              <label for="input-name" class="block text-[11px] font-mono text-zinc-500 mb-1">NAME</label>
               <input id="input-name" type="text" required placeholder="Jane Doe" 
-                     class="w-full bg-black/40 border border-white/[0.08] focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none transition">
+                     class="w-full bg-black border border-zinc-800 focus:border-zinc-500 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none transition font-sans">
             </div>
             <div>
-              <label for="input-handle" class="block text-xs font-mono text-slate-400 mb-1.5">EMAIL OR CONTACT HANDLE</label>
-              <input id="input-handle" type="text" required placeholder="jane@example.com / @discord" 
-                     class="w-full bg-black/40 border border-white/[0.08] focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none transition">
+              <label for="input-handle" class="block text-[11px] font-mono text-zinc-500 mb-1">CONTACT / HANDLE</label>
+              <input id="input-handle" type="text" required placeholder="name@company.com" 
+                     class="w-full bg-black border border-zinc-800 focus:border-zinc-500 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none transition font-sans">
             </div>
           </div>
           <div>
-            <label for="input-details" class="block text-xs font-mono text-slate-400 mb-1.5">PROJECT DETAILS OR INQUIRY</label>
-            <textarea id="input-details" required rows="4" placeholder="Tell me about the problem you want to solve..." 
-                      class="w-full bg-black/40 border border-white/[0.08] focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none transition resize-none"></textarea>
+            <label for="input-details" class="block text-[11px] font-mono text-zinc-500 mb-1">MESSAGE</label>
+            <textarea id="input-details" required rows="3" placeholder="Tell me what you're building..." 
+                      class="w-full bg-black border border-zinc-800 focus:border-zinc-500 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none transition resize-none font-sans"></textarea>
           </div>
-          <button type="submit" class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition shadow-lg shadow-blue-500/25">
-            Send Message 🚀
+          <button type="submit" class="aceternity-btn-primary px-5 py-2 text-xs font-semibold">
+            Send Message
           </button>
         </form>
       </div>
@@ -397,19 +361,14 @@
 
   </main>
 
-  <!-- Footer -->
-  <footer class="border-t border-white/[0.06] py-8 text-center text-xs text-slate-500 relative z-10" role="contentinfo">
-    <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-      <span>© 2026 Aditya Kumar (R3xo666). All rights reserved.</span>
-      <div class="flex items-center gap-3 font-mono">
-        <span>Fedora Linux Native</span>
-        <span>•</span>
-        <span>WCAG 2.2 AA Compliant Typography</span>
-      </div>
+  <!-- Minimal Footer -->
+  <footer class="border-t border-zinc-900 py-6 text-center text-xs text-zinc-600 relative z-10 font-mono">
+    <div class="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <span>© 2026 Aditya Kumar (R3xo666)</span>
+      <span>Fedora Linux Native • Aceternity Minimal Theme</span>
     </div>
   </footer>
 
-  <!-- Scripts -->
   <script src="js/data.js"></script>
   <script src="js/github.js"></script>
   <script src="js/app.js"></script>

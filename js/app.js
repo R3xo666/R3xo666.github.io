@@ -1,28 +1,19 @@
 /**
- * Main application orchestrator: Routing, dynamic rendering, and animations
+ * Main application orchestrator (Aceternity UI Edition)
  */
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. Initialize Ambient Mouse Glow
-  initAmbientGlow();
-
-  // 2. Initialize Navigation Router
+  initAceternitySpotlight();
   initNavigation();
-
-  // 3. Render Views
   renderProjects();
   renderSkills();
-
-  // 4. Initialize Interactive Utilities (copy to clipboard, etc.)
   initInteractiveUtils();
-
-  // 5. Initialize Terminal Run Simulation
   initTerminalSimulation();
 });
 
-// Ambient Mouse Spotlight
-function initAmbientGlow() {
-  const glow = document.getElementById("ambient-glow");
+// Aceternity Smooth Spotlight Effect
+function initAceternitySpotlight() {
+  const glow = document.getElementById("aceternity-spotlight");
   if (!glow) return;
 
   let mouseX = window.innerWidth / 2;
@@ -50,16 +41,16 @@ function initNavigation() {
   const tabContents = document.querySelectorAll(".tab-content");
 
   function switchTab(targetTabId) {
-    // Update pills
     navPills.forEach((pill) => {
       if (pill.dataset.tab === targetTabId) {
         pill.classList.add("active");
+        pill.setAttribute("aria-selected", "true");
       } else {
         pill.classList.remove("active");
+        pill.setAttribute("aria-selected", "false");
       }
     });
 
-    // Update tab content
     tabContents.forEach((tab) => {
       if (tab.id === targetTabId) {
         tab.classList.add("active");
@@ -68,7 +59,6 @@ function initNavigation() {
       }
     });
 
-    // Scroll to top
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -81,16 +71,14 @@ function initNavigation() {
     });
   });
 
-  // Handle direct hash navigation (#projects, #about, #contact)
+  // Direct hash navigation
   const hash = window.location.hash.replace("#", "");
   if (hash) {
     const targetPill = document.querySelector(`[data-tab="tab-${hash}"]`);
-    if (targetPill) {
-      switchTab(`tab-${hash}`);
-    }
+    if (targetPill) switchTab(`tab-${hash}`);
   }
 
-  // Quick CTA links inside pages
+  // Quick CTA links inside content
   document.querySelectorAll("[data-navigate]").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
@@ -100,7 +88,7 @@ function initNavigation() {
   });
 }
 
-// Render Projects with Live GitHub API Sync
+// Render Projects with Aceternity Card Styling
 async function renderProjects() {
   const container = document.getElementById("projects-grid");
   if (!container) return;
@@ -108,12 +96,10 @@ async function renderProjects() {
   const data = window.PORTFOLIO_DATA;
   let projects = [...data.curatedProjects];
 
-  // Try live GitHub REST API fetch
   const ghClient = new window.GitHubApiClient("R3xo666");
   const liveRepos = await ghClient.fetchRepositories();
 
   if (liveRepos && Array.isArray(liveRepos)) {
-    // Merge live stars and updated topics
     projects = projects.map((proj) => {
       const match = liveRepos.find((r) => r.name.toLowerCase() === proj.repoName.toLowerCase());
       if (match) {
@@ -129,25 +115,24 @@ async function renderProjects() {
     });
   }
 
-  // Render HTML
-  container.innerHTML = projects.map((p) => createProjectCardHTML(p)).join("");
+  container.innerHTML = projects.map((p) => createAceternityProjectCard(p)).join("");
   initProjectFilters(projects);
 }
 
-function createProjectCardHTML(p) {
+function createAceternityProjectCard(p) {
   const tagsHtml = p.topics
     .slice(0, 4)
     .map(
       (t) =>
-        `<span class="text-xs px-2.5 py-1 rounded-md bg-white/[0.04] border border-white/[0.08] text-slate-300 font-mono">#${t}</span>`
+        `<span class="text-[11px] px-2.5 py-0.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono">#${t}</span>`
     )
     .join("");
 
   const highlightsHtml = p.highlights
     .map(
       (h) => `
-      <li class="flex items-start gap-2 text-xs text-slate-300">
-        <span class="text-blue-400 mt-0.5">▹</span>
+      <li class="flex items-start gap-2 text-xs text-zinc-300">
+        <span class="text-zinc-500 mt-0.5 font-mono">/</span>
         <span>${h}</span>
       </li>
     `
@@ -155,27 +140,27 @@ function createProjectCardHTML(p) {
     .join("");
 
   return `
-    <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between group" data-tags="${p.topics.join(" ")}">
+    <div class="aceternity-card p-6 flex flex-col justify-between group" data-tags="${p.topics.join(" ")}">
       <div>
-        <div class="flex items-center justify-between gap-3 mb-3">
-          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+        <div class="flex items-center justify-between gap-3 mb-4">
+          <span class="text-[11px] font-medium tracking-wide uppercase px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-700/60 text-zinc-300">
             ${p.badge}
           </span>
-          <div class="flex items-center gap-3 text-xs text-slate-400 font-mono">
+          <div class="flex items-center gap-3 text-xs text-zinc-400 font-mono">
             <span>⭐ ${p.stars || 0}</span>
             <span class="text-emerald-400 font-sans">✓ Verified</span>
           </div>
         </div>
 
-        <h3 class="text-lg font-bold text-white group-hover:text-blue-400 transition-colors">
+        <h3 class="text-lg font-bold text-white group-hover:text-zinc-200 transition-colors">
           ${p.displayName}
         </h3>
-        <p class="text-xs text-slate-400 font-mono mt-0.5 mb-3">${p.repoName}</p>
-        <p class="text-sm text-slate-300 leading-relaxed mb-4">
+        <p class="text-xs text-zinc-500 font-mono mt-0.5 mb-3">${p.repoName}</p>
+        <p class="text-sm text-zinc-400 leading-relaxed mb-5">
           ${p.description}
         </p>
 
-        <ul class="space-y-1.5 mb-5 p-3 rounded-xl bg-black/20 border border-white/[0.04]">
+        <ul class="space-y-1.5 mb-6 p-3 rounded-xl bg-black/40 border border-zinc-800/80">
           ${highlightsHtml}
         </ul>
       </div>
@@ -185,16 +170,16 @@ function createProjectCardHTML(p) {
           ${tagsHtml}
         </div>
 
-        <div class="pt-4 border-t border-white/[0.06] flex items-center justify-between">
-          <div class="flex items-center gap-2 text-xs text-slate-400">
-            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+        <div class="pt-4 border-t border-zinc-800 flex items-center justify-between">
+          <div class="flex items-center gap-2 text-xs text-zinc-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
             <span>Python</span>
-            ${p.liveUpdated ? `<span class="text-slate-500">• Updated ${p.liveUpdated}</span>` : ""}
+            ${p.liveUpdated ? `<span class="text-zinc-600">• ${p.liveUpdated}</span>` : ""}
           </div>
           <a href="${p.githubUrl}" target="_blank" rel="noopener noreferrer" 
-             class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.15] text-white transition border border-white/[0.1]">
-            <span>View Source</span>
-            <span>↗</span>
+             class="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 hover:text-white transition border border-zinc-700">
+            <span>Repository</span>
+            <span class="text-zinc-400">↗</span>
           </a>
         </div>
       </div>
@@ -203,14 +188,18 @@ function createProjectCardHTML(p) {
 }
 
 // Project Tag Filtering
-function initProjectFilters(projects) {
+function initProjectFilters() {
   const filterBtns = document.querySelectorAll(".filter-btn");
   const cards = document.querySelectorAll("#projects-grid > div");
 
   filterBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
-      filterBtns.forEach((b) => b.classList.remove("active", "bg-blue-600", "text-white"));
-      btn.classList.add("active", "bg-blue-600", "text-white");
+      filterBtns.forEach((b) => {
+        b.classList.remove("active", "bg-zinc-100", "text-black", "border-white");
+        b.classList.add("bg-zinc-900", "text-zinc-400", "border-zinc-800");
+      });
+      btn.classList.add("active", "bg-zinc-100", "text-black", "border-white");
+      btn.classList.remove("bg-zinc-900", "text-zinc-400", "border-zinc-800");
 
       const filter = btn.dataset.filter;
       cards.forEach((card) => {
@@ -224,7 +213,7 @@ function initProjectFilters(projects) {
   });
 }
 
-// Render Skills Matrix
+// Render Skills Matrix (Aceternity Editorial Layout)
 function renderSkills() {
   const container = document.getElementById("skills-container");
   if (!container) return;
@@ -233,20 +222,21 @@ function renderSkills() {
   container.innerHTML = data.skills
     .map(
       (cat) => `
-    <div class="glass-panel rounded-2xl p-6">
-      <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 pb-2 border-b border-white/[0.06]">
-        ${cat.category}
+    <div class="aceternity-card p-6">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4 pb-2 border-b border-zinc-800 flex items-center justify-between">
+        <span>${cat.category}</span>
+        <span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span>
       </h3>
-      <div class="space-y-3">
+      <div class="space-y-2.5">
         ${cat.items
           .map(
             (item) => `
-          <div class="flex items-center justify-between p-2.5 rounded-xl hover:bg-white/[0.03] transition">
-            <div class="flex items-center gap-3">
-              <span class="w-2 h-2 rounded-full ${item.highlight ? "bg-blue-400 ring-4 ring-blue-400/20" : "bg-slate-600"}"></span>
-              <span class="text-sm font-medium ${item.highlight ? "text-white font-semibold" : "text-slate-300"}">${item.name}</span>
+          <div class="flex items-center justify-between p-2 rounded-lg hover:bg-zinc-900/60 transition">
+            <div class="flex items-center gap-2.5">
+              <span class="w-1.5 h-1.5 rounded-full ${item.highlight ? "bg-white ring-2 ring-white/20" : "bg-zinc-600"}"></span>
+              <span class="text-sm font-medium ${item.highlight ? "text-white font-semibold" : "text-zinc-300"}">${item.name}</span>
             </div>
-            <span class="text-xs font-mono text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.04]">${item.level}</span>
+            <span class="text-[11px] font-mono text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">${item.level}</span>
           </div>
         `
           )
@@ -258,18 +248,17 @@ function renderSkills() {
     .join("");
 }
 
-// Interactive Utilities: Clipboard & Toast
+// Interactive Utilities
 function initInteractiveUtils() {
   document.querySelectorAll("[data-copy]").forEach((el) => {
     el.addEventListener("click", () => {
       const textToCopy = el.getAttribute("data-copy");
       navigator.clipboard.writeText(textToCopy).then(() => {
-        showToast(`Copied "${textToCopy}" to clipboard!`);
+        showToast(`Copied "${textToCopy}" to clipboard`);
       });
     });
   });
 
-  // Simulated Contact Form
   const contactForm = document.getElementById("contact-form");
   if (contactForm) {
     contactForm.addEventListener("submit", (e) => {
@@ -280,7 +269,7 @@ function initInteractiveUtils() {
       submitBtn.disabled = true;
 
       setTimeout(() => {
-        showToast("Message sent! I'll get back to you shortly.");
+        showToast("Inquiry received. I'll get back to you shortly.");
         contactForm.reset();
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
@@ -299,7 +288,7 @@ function showToast(message) {
   }, 3000);
 }
 
-// Terminal simulation run button
+// Terminal Simulation
 function initTerminalSimulation() {
   const runBtn = document.getElementById("term-run-btn");
   const outputEl = document.getElementById("term-output");
@@ -308,11 +297,11 @@ function initTerminalSimulation() {
   runBtn.addEventListener("click", () => {
     outputEl.classList.remove("hidden");
     outputEl.innerHTML = `
-      <div class="text-blue-400 animate-pulse">[+] Executing developer.py runtime check...</div>
-      <div class="text-slate-300 mt-1">✓ OS: Fedora Linux (x86_64)</div>
-      <div class="text-slate-300">✓ Stack: Python 3.12 / AsyncIO / Pydantic v2</div>
-      <div class="text-slate-300">✓ Security: OWASP CWE-1236 Defenses Active</div>
-      <div class="text-emerald-400 mt-1">✓ Ready for complex pipeline automation and high-velocity builds.</div>
+      <div class="text-zinc-400 font-mono">[+] Running developer.py environment check...</div>
+      <div class="text-zinc-300 mt-1 font-mono">→ System: Fedora Linux (x86_64) • Wayland</div>
+      <div class="text-zinc-300 font-mono">→ Core: Python 3.12+ • AsyncIO • Pydantic v2</div>
+      <div class="text-zinc-300 font-mono">→ Security: OWASP CWE-1236 Neutralized</div>
+      <div class="text-emerald-400 mt-1 font-mono">✓ Operational. Ready for complex micro-SaaS pipelines.</div>
     `;
   });
 }
