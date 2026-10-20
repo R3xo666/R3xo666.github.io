@@ -13,7 +13,7 @@ const PORTFOLIO_DATA = {
     socials: {
       github: "https://github.com/R3xo666",
       discord: "dattebayoo.bat",
-      email: "demon556thedeath@gmail.com"
+      email: "r3xo666.dev@gmail.com"
     }
   },
 

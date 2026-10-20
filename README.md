@@ -47,7 +47,7 @@ Open [http://localhost:8000](http://localhost:8000) in your browser.
 
 - **GitHub:** [@R3xo666](https://github.com/R3xo666)
 - **Discord:** `dattebayoo.bat`
-- **Email:** demon556thedeath@gmail.com
+- **Email:** r3xo666.dev@gmail.com
 
 ---
 
