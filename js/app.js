@@ -247,7 +247,7 @@ function initProjectFilters() {
   });
 }
 
-// Render Skills Matrix (Aceternity Editorial Layout with strict CSS grid alignment)
+// Render Skills Matrix (Robust Two-Tier Layout — Zero Truncation & Glitches)
 function renderSkills() {
   const container = document.getElementById("skills-container");
   if (!container) return;
@@ -258,22 +258,32 @@ function renderSkills() {
       (cat) => `
     <div class="aceternity-card p-5 sm:p-6 flex flex-col justify-between">
       <div>
-        <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4 pb-2 border-b border-zinc-800 flex items-center justify-between">
-          <span>${cat.category}</span>
-          <span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span>
-        </h3>
-        <div class="space-y-2">
+        <div class="flex items-center justify-between pb-3 mb-3.5 border-b border-zinc-800/80">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-zinc-300">${cat.category}</h3>
+          </div>
+          <span class="text-[10px] font-mono text-zinc-500 uppercase px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800/80">${cat.items.length} Techs</span>
+        </div>
+        <div class="space-y-2.5">
           ${cat.items
             .map(
               (item) => `
-            <div class="grid grid-cols-[1fr_auto] items-center gap-3 py-2 px-2.5 rounded-lg hover:bg-zinc-900/60 transition-colors w-full group/skill">
-              <div class="flex items-center gap-2.5 min-w-0 pr-1">
-                <span class="w-1.5 h-1.5 shrink-0 rounded-full ${item.highlight ? "bg-emerald-400 ring-2 ring-emerald-400/30" : "bg-zinc-600"}"></span>
-                <span class="text-xs sm:text-sm font-medium ${item.highlight ? "text-white font-semibold" : "text-zinc-300 group-hover/skill:text-white"} truncate">${item.name}</span>
+            <div class="group/skill p-3 rounded-xl bg-black/50 border border-zinc-800/70 hover:border-zinc-700 hover:bg-zinc-900/40 transition-all duration-200">
+              <!-- Tier 1: Skill Name & Core Badge -->
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="w-1.5 h-1.5 shrink-0 rounded-full ${item.highlight ? "bg-emerald-400 ring-2 ring-emerald-400/30" : "bg-zinc-600"}"></span>
+                  <span class="text-xs sm:text-sm font-semibold text-white tracking-tight">${item.name}</span>
+                </div>
+                ${item.highlight ? `<span class="shrink-0 text-[10px] font-mono tracking-wider uppercase px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Core</span>` : ""}
               </div>
-              <span class="shrink-0 text-[11px] font-mono text-zinc-400 bg-zinc-900/90 px-2.5 py-1 rounded-md border border-zinc-800/90 whitespace-nowrap text-right justify-self-end">
-                ${item.level}
-              </span>
+              
+              <!-- Tier 2: Subtitle / Role Description (Guaranteed Full Visibility) -->
+              <div class="flex items-center gap-1.5 pl-3.5 text-[11px] font-mono text-zinc-400">
+                <span class="text-zinc-600">↳</span>
+                <span class="leading-snug">${item.level}</span>
+              </div>
             </div>
           `
             )
