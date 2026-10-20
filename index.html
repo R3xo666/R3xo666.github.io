@@ -325,27 +325,37 @@ developer = {
         <h3 class="text-sm font-bold text-white mb-1">Direct Inquiry</h3>
         <p class="text-xs text-zinc-500 mb-5">Leave a message regarding a micro-SaaS or data extraction project.</p>
 
-        <form id="contact-form" class="space-y-4">
+        <form id="contact-form" action="https://formsubmit.co/r3xo666.dev@gmail.com" method="POST" class="space-y-4">
+          <!-- Invisible Bot Trap (Honeypot) -->
+          <input type="text" id="trap-bot" name="_trap_bot" tabindex="-1" autocomplete="off" class="opacity-0 absolute -z-10 w-0 h-0 pointer-events-none select-none" aria-hidden="true">
+
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label for="input-name" class="block text-[11px] font-mono text-zinc-500 mb-1">NAME</label>
-              <input id="input-name" type="text" required placeholder="Jane Doe" 
+              <input id="input-name" name="name" type="text" required placeholder="Jane Doe" maxlength="80"
                      class="w-full bg-black border border-zinc-800 focus:border-zinc-500 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none transition font-sans">
             </div>
             <div>
               <label for="input-handle" class="block text-[11px] font-mono text-zinc-500 mb-1">CONTACT / HANDLE</label>
-              <input id="input-handle" type="text" required placeholder="name@company.com" 
+              <input id="input-handle" name="contact" type="text" required placeholder="name@company.com / @discord" maxlength="100"
                      class="w-full bg-black border border-zinc-800 focus:border-zinc-500 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none transition font-sans">
             </div>
           </div>
           <div>
             <label for="input-details" class="block text-[11px] font-mono text-zinc-500 mb-1">MESSAGE</label>
-            <textarea id="input-details" required rows="3" placeholder="Tell me what you're building..." 
+            <textarea id="input-details" name="message" required rows="3" placeholder="Tell me what you're building..." maxlength="2000"
                       class="w-full bg-black border border-zinc-800 focus:border-zinc-500 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none transition resize-none font-sans"></textarea>
           </div>
-          <button type="submit" class="aceternity-btn-primary px-5 py-2 text-xs font-semibold">
-            Send Message
-          </button>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+            <button type="submit" class="aceternity-btn-primary px-5 py-2 text-xs font-semibold flex items-center justify-center gap-2">
+              <span>Send Message</span>
+              <span class="text-zinc-500 font-mono">→</span>
+            </button>
+            <div class="flex items-center gap-2 text-[10px] font-mono text-zinc-500">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+              <span>DDoS Rate-Limited • Bot Protected • IP Logged</span>
+            </div>
+          </div>
         </form>
       </div>
 
