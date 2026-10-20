@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initReviewModal();
   initInteractiveUtils();
   initTerminalSimulation();
+  initVimAndCommandPalette();
 });
 
 // Antigravity Atmospheric Mesh & Interactive Bounced Surface Canvas
@@ -83,6 +84,9 @@ function initAntigravityBackground() {
     "return res"
   ];
 
+  // Special Easter Egg Visual Modes: "normal", "matrix", "vibe"
+  window.__antigravityMode = "normal";
+
   // Particle configuration (Floating Python Syntax Nodes)
   const particles = [];
   const particleCount = Math.min(55, Math.floor((width * height) / 24000));
@@ -123,24 +127,42 @@ function initAntigravityBackground() {
     }
 
     update(targetX, targetY) {
-      // Natural float drift
-      this.x += this.vx;
-      this.y += this.vy;
+      if (window.__antigravityMode === "matrix") {
+        // Vertical digital rain speed
+        this.y += 3.5;
+        this.x += (Math.random() - 0.5) * 0.4;
+        if (this.y > height + 20) {
+          this.y = -20;
+          this.x = Math.random() * width;
+        }
+      } else if (window.__antigravityMode === "vibe") {
+        // Neon hyperdrive velocity
+        this.x += this.vx * 3.5;
+        this.y += this.vy * 3.5;
+        if (this.x < 0) this.x = width;
+        if (this.x > width) this.x = 0;
+        if (this.y < 0) this.y = height;
+        if (this.y > height) this.y = 0;
+      } else {
+        // Natural float drift
+        this.x += this.vx;
+        this.y += this.vy;
 
-      // Bounce gracefully off canvas bounds (Bounced Surface)
-      if (this.x < 10) {
-        this.x = 10;
-        this.vx = Math.abs(this.vx);
-      } else if (this.x > width - 50) {
-        this.x = width - 50;
-        this.vx = -Math.abs(this.vx);
-      }
-      if (this.y < 20) {
-        this.y = 20;
-        this.vy = Math.abs(this.vy);
-      } else if (this.y > height - 20) {
-        this.y = height - 20;
-        this.vy = -Math.abs(this.vy);
+        // Bounce gracefully off canvas bounds (Bounced Surface)
+        if (this.x < 10) {
+          this.x = 10;
+          this.vx = Math.abs(this.vx);
+        } else if (this.x > width - 50) {
+          this.x = width - 50;
+          this.vx = -Math.abs(this.vx);
+        }
+        if (this.y < 20) {
+          this.y = 20;
+          this.vy = Math.abs(this.vy);
+        } else if (this.y > height - 20) {
+          this.y = height - 20;
+          this.vy = -Math.abs(this.vy);
+        }
       }
 
       // Gravitational bounce & repulsion around cursor
@@ -982,12 +1004,35 @@ function initArchitecturePlayground() {
     });
   }
 
-  if (owaspInput && owaspOutput && owaspBadge) {
-    owaspInput.addEventListener("input", (e) => {
-      const raw = e.target.value;
-      const isDangerous = /^[=+\-@\t\r]/.test(raw.trim());
+  let owaspDefenseActive = true;
+  const owaspToggle = document.getElementById("owasp-toggle");
+  const owaspKnob = document.getElementById("owasp-toggle-knob");
+  const owaspStatusText = document.getElementById("owasp-status-text");
+  const owaspOutputBox = document.getElementById("owasp-output-box");
 
-      // Safe escape logic identical to backend invariants
+  const runOwaspSanitizer = () => {
+    if (!owaspInput || !owaspOutput) return;
+    const raw = owaspInput.value;
+    const isDangerous = /^[=+\-@\t\r]/.test(raw.trim());
+
+    if (!owaspDefenseActive) {
+      // Unprotected state: Shows vulnerable execution warning
+      if (isDangerous) {
+        owaspOutput.textContent = `[EXPLOIT TRIGGERED: Arbitrary Execution: ${raw.slice(0, 30)}]`;
+        owaspOutput.className = "font-semibold truncate max-w-[210px] text-rose-500 animate-pulse";
+        if (owaspOutputBox) {
+          owaspOutputBox.className = "p-2.5 rounded-lg bg-rose-950/40 border border-rose-800/80 flex items-center justify-between text-xs font-mono transition-colors shadow-[0_0_15px_rgba(244,63,94,0.2)]";
+        }
+        playSfx("blip");
+      } else {
+        owaspOutput.textContent = raw || "(empty)";
+        owaspOutput.className = "font-semibold truncate max-w-[210px] text-zinc-400";
+        if (owaspOutputBox) {
+          owaspOutputBox.className = "p-2.5 rounded-lg bg-black/50 border border-zinc-800 flex items-center justify-between text-xs font-mono transition-colors";
+        }
+      }
+    } else {
+      // Protected state: OWASP CWE-1236 Invariant Neutralization
       let sanitized = raw.replace(/[<>&"']/g, (m) => {
         return { "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&#39;" }[m];
       });
@@ -996,15 +1041,50 @@ function initArchitecturePlayground() {
       }
 
       owaspOutput.textContent = sanitized || "(empty)";
+      owaspOutput.className = isDangerous ? "font-semibold truncate max-w-[210px] text-emerald-400 font-bold" : "font-semibold truncate max-w-[210px] text-zinc-300";
+      if (owaspOutputBox) {
+        owaspOutputBox.className = isDangerous
+          ? "p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-800/80 flex items-center justify-between text-xs font-mono transition-colors"
+          : "p-2.5 rounded-lg bg-black/50 border border-zinc-800 flex items-center justify-between text-xs font-mono transition-colors";
+      }
+    }
+  };
 
-      if (isDangerous) {
-        owaspBadge.textContent = "Neutralized (Prepend ')";
-        owaspBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-400 border border-emerald-700 animate-pulse";
+  if (owaspToggle && owaspKnob && owaspStatusText) {
+    owaspToggle.addEventListener("click", () => {
+      owaspDefenseActive = !owaspDefenseActive;
+      playSfx("click");
+
+      if (owaspDefenseActive) {
+        owaspToggle.className = "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border border-zinc-700 bg-emerald-500 transition-colors duration-200 ease-in-out focus:outline-none";
+        owaspKnob.className = "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-black shadow-lg ring-0 transition duration-200 ease-in-out translate-x-4";
+        owaspStatusText.textContent = "ACTIVE";
+        owaspStatusText.className = "text-[11px] font-mono text-emerald-400 font-semibold";
+        showToast("🛡️ Defense Shield: OWASP Invariant Activated");
       } else {
-        owaspBadge.textContent = "Safe Content";
-        owaspBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700";
+        owaspToggle.className = "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border border-zinc-700 bg-zinc-800 transition-colors duration-200 ease-in-out focus:outline-none";
+        owaspKnob.className = "pointer-events-none inline-block h-4 w-4 transform rounded-full bg-zinc-400 shadow-lg ring-0 transition duration-200 ease-in-out translate-x-0";
+        owaspStatusText.textContent = "BYPASS";
+        owaspStatusText.className = "text-[11px] font-mono text-rose-500 font-semibold";
+        showToast("⚠️ Defense Disabled: Formula Injection Unprotected!");
+      }
+
+      runOwaspSanitizer();
+    });
+  }
+
+  // Attack preset pills
+  document.querySelectorAll(".owasp-preset-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (owaspInput) {
+        owaspInput.value = btn.getAttribute("data-payload") || "";
+        runOwaspSanitizer();
       }
     });
+  });
+
+  if (owaspInput) {
+    owaspInput.addEventListener("input", runOwaspSanitizer);
   }
 }
 
@@ -1724,3 +1804,241 @@ ${rawTelemetry ? `- **Outcome / Metric**: ${rawTelemetry}` : ""}
   });
 }
 
+// ==================== Feature 1: Omni Command Palette, Vim Hotkeys & Easter Eggs ====================
+function initVimAndCommandPalette() {
+  const cmdModal = document.getElementById("modal-cmd-palette");
+  const cmdInput = document.getElementById("cmd-palette-input");
+  const cmdResults = document.getElementById("cmd-palette-results");
+  const cmdTrigger = document.getElementById("btn-cmd-palette-trigger");
+
+  const shortcutsModal = document.getElementById("modal-shortcuts");
+  const closeShortcutsBtn = document.getElementById("btn-close-shortcuts");
+
+  const commands = [
+    { title: "Jump to Overview", category: "Navigation", hotkey: "1", action: () => document.getElementById("tab-btn-overview")?.click() },
+    { title: "Browse Micro-SaaS Projects", category: "Navigation", hotkey: "2", action: () => document.getElementById("tab-btn-projects")?.click() },
+    { title: "View Engineering Arsenal & About", category: "Navigation", hotkey: "3", action: () => document.getElementById("tab-btn-about")?.click() },
+    { title: "Read Verified Client Endorsements", category: "Navigation", hotkey: "4", action: () => document.getElementById("tab-btn-reviews")?.click() },
+    { title: "Open Direct Contact Terminal", category: "Navigation", hotkey: "5", action: () => document.getElementById("tab-btn-contact")?.click() },
+    { title: "Submit a GitHub Verified Review", category: "Reviews", hotkey: "N", action: () => document.getElementById("btn-open-review-modal")?.click() },
+    { title: "Toggle Mechanical Sound Effects", category: "Settings", hotkey: "M", action: () => document.getElementById("btn-sfx-toggle")?.click() },
+    { title: "Trigger Reactor Overclock Engine", category: "Simulation", hotkey: "R", action: () => document.getElementById("term-run-btn")?.click() },
+    { title: "Filter: Crypto Arbitrage Bots", category: "Filter", hotkey: "", action: () => document.querySelector(".filter-btn[data-filter='crypto']")?.click() },
+    { title: "Filter: Document Extractors", category: "Filter", hotkey: "", action: () => document.querySelector(".filter-btn[data-filter='pdfplumber']")?.click() },
+    { title: "Filter: E-Commerce Micro-SaaS", category: "Filter", hotkey: "", action: () => document.querySelector(".filter-btn[data-filter='shopify']")?.click() },
+    { title: "Easter Egg: Digital Matrix Rain", category: "Easter Egg", hotkey: "matrix", action: () => triggerMatrixRain() },
+    { title: "Easter Egg: Neon Hyperdrive Vibe", category: "Easter Egg", hotkey: "vibe", action: () => triggerVibeMode() }
+  ];
+
+  let selectedIndex = 0;
+  let filteredCommands = [...commands];
+
+  function openCmdPalette() {
+    if (!cmdModal) return;
+    cmdModal.classList.add("active");
+    if (cmdInput) {
+      cmdInput.value = "";
+      cmdInput.focus();
+    }
+    renderResults();
+    playSfx("click");
+  }
+
+  function closeCmdPalette() {
+    if (!cmdModal) return;
+    cmdModal.classList.remove("active");
+  }
+
+  function openShortcuts() {
+    if (shortcutsModal) {
+      shortcutsModal.classList.add("active");
+      playSfx("click");
+    }
+  }
+
+  function closeShortcuts() {
+    if (shortcutsModal) {
+      shortcutsModal.classList.remove("active");
+    }
+  }
+
+  function renderResults() {
+    if (!cmdResults) return;
+    const q = (cmdInput?.value || "").toLowerCase().trim();
+    filteredCommands = commands.filter(
+      (c) => c.title.toLowerCase().includes(q) || c.category.toLowerCase().includes(q) || c.hotkey.toLowerCase().includes(q)
+    );
+
+    if (selectedIndex >= filteredCommands.length) selectedIndex = 0;
+
+    if (filteredCommands.length === 0) {
+      cmdResults.innerHTML = `<div class="p-4 text-center text-zinc-500 font-mono text-xs">No matching commands found.</div>`;
+      return;
+    }
+
+    cmdResults.innerHTML = filteredCommands
+      .map((c, i) => {
+        const isSelected = i === selectedIndex;
+        return `
+          <div class="cmd-item p-2.5 rounded-lg flex items-center justify-between cursor-pointer transition ${
+            isSelected ? "bg-zinc-800/90 text-white border border-zinc-700" : "text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-200"
+          }" data-index="${i}">
+            <div class="flex items-center gap-2.5">
+              <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-400 border border-zinc-800">${escapeHtml(c.category)}</span>
+              <span class="font-medium">${escapeHtml(c.title)}</span>
+            </div>
+            ${c.hotkey ? `<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-400 border border-zinc-800/80">${escapeHtml(c.hotkey)}</span>` : ""}
+          </div>
+        `;
+      })
+      .join("");
+
+    cmdResults.querySelectorAll(".cmd-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        const idx = parseInt(item.getAttribute("data-index"), 10);
+        executeCommand(filteredCommands[idx]);
+      });
+    });
+  }
+
+  function executeCommand(cmd) {
+    if (!cmd) return;
+    closeCmdPalette();
+    cmd.action();
+    playSfx("success");
+  }
+
+  function triggerMatrixRain() {
+    window.__antigravityMode = "matrix";
+    showToast("🟢 MATRIX MODE ENGAGED: Digital rain active!");
+    playSfx("overclock");
+    setTimeout(() => {
+      window.__antigravityMode = "normal";
+    }, 15000);
+  }
+
+  function triggerVibeMode() {
+    window.__antigravityMode = "vibe";
+    showToast("🟣 NEON HYPERDRIVE: Maximum velocity vibe active!");
+    playSfx("overclock");
+    setTimeout(() => {
+      window.__antigravityMode = "normal";
+    }, 15000);
+  }
+
+  // Key tracking for typing "matrix" or "vibe" anywhere
+  let typedBuffer = "";
+  let bufferTimer = null;
+
+  window.addEventListener("keydown", (e) => {
+    // If typing inside an input or textarea, only check Escape or Ctrl+K
+    const isEditing = e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA";
+
+    // Escape handling
+    if (e.key === "Escape") {
+      closeCmdPalette();
+      closeShortcuts();
+      return;
+    }
+
+    // Ctrl+K or Cmd+K
+    if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) {
+      e.preventDefault();
+      if (cmdModal?.classList.contains("active")) closeCmdPalette();
+      else openCmdPalette();
+      return;
+    }
+
+    // Forward Slash '/' when not typing
+    if (e.key === "/" && !isEditing) {
+      e.preventDefault();
+      openCmdPalette();
+      return;
+    }
+
+    // Question Mark '?' when not typing
+    if (e.key === "?" && !isEditing) {
+      e.preventDefault();
+      openShortcuts();
+      return;
+    }
+
+    // Hotkeys inside Command Palette
+    if (cmdModal?.classList.contains("active")) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        selectedIndex = (selectedIndex + 1) % filteredCommands.length;
+        renderResults();
+        playSfx("blip");
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        selectedIndex = (selectedIndex - 1 + filteredCommands.length) % filteredCommands.length;
+        renderResults();
+        playSfx("blip");
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        if (filteredCommands[selectedIndex]) {
+          executeCommand(filteredCommands[selectedIndex]);
+        }
+      }
+      return;
+    }
+
+    // Global Vim Navigation when not editing text
+    if (!isEditing) {
+      const tabs = ["tab-overview", "tab-projects", "tab-about", "tab-reviews", "tab-contact"];
+      const currentActive = document.querySelector(".tab-content.active")?.id || "tab-overview";
+      const currentIdx = tabs.indexOf(currentActive);
+
+      if (e.key === "j" || e.key === "J") {
+        // Next tab
+        const nextIdx = (currentIdx + 1) % tabs.length;
+        const targetBtn = document.querySelector(`.nav-pill[data-tab='${tabs[nextIdx]}']`);
+        targetBtn?.click();
+      } else if (e.key === "k" || e.key === "K") {
+        // Prev tab
+        const prevIdx = (currentIdx - 1 + tabs.length) % tabs.length;
+        const targetBtn = document.querySelector(`.nav-pill[data-tab='${tabs[prevIdx]}']`);
+        targetBtn?.click();
+      } else if (e.key === "m" || e.key === "M") {
+        // Toggle sound
+        document.getElementById("btn-sfx-toggle")?.click();
+      } else if (e.key === "r" || e.key === "R") {
+        // Run terminal check
+        document.getElementById("term-run-btn")?.click();
+      }
+
+      // Buffer recording for word easter eggs: "matrix", "vibe"
+      if (/^[a-z]$/i.test(e.key)) {
+        typedBuffer += e.key.toLowerCase();
+        clearTimeout(bufferTimer);
+        bufferTimer = setTimeout(() => { typedBuffer = ""; }, 1800);
+
+        if (typedBuffer.endsWith("matrix")) {
+          triggerMatrixRain();
+          typedBuffer = "";
+        } else if (typedBuffer.endsWith("vibe")) {
+          triggerVibeMode();
+          typedBuffer = "";
+        }
+      }
+    }
+  });
+
+  // Event Listeners for Command Palette
+  cmdTrigger?.addEventListener("click", openCmdPalette);
+  cmdInput?.addEventListener("input", () => {
+    selectedIndex = 0;
+    renderResults();
+  });
+
+  // Modal Backdrop click
+  cmdModal?.addEventListener("click", (e) => {
+    if (e.target === cmdModal) closeCmdPalette();
+  });
+
+  shortcutsModal?.addEventListener("click", (e) => {
+    if (e.target === shortcutsModal) closeShortcuts();
+  });
+  closeShortcutsBtn?.addEventListener("click", closeShortcuts);
+}
