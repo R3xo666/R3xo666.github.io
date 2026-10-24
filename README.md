@@ -1,54 +1,37 @@
-# r3xo666.github.io
+# Aditya Kumar's portfolio
 
-Personal portfolio website showcasing my open-source projects, engineering tools, and experiments in Python backend systems and automation.
+A single-page portfolio for my public projects in Python, automation, and data.
 
-🌐 **Live Website:** [r3xo666.github.io](https://r3xo666.github.io)
+## Built with
 
----
+- Semantic HTML and custom CSS
+- Vanilla JavaScript
+- GitHub REST API for the public repository list, with a short browser cache
+- FormSubmit for the contact form
 
-## 🛠️ Tech Stack
+There is no build step or package install.
 
-- **Markup & Styling:** Semantic HTML5, Tailwind CSS, Custom CSS micro-interactions
-- **Scripting:** Vanilla JavaScript (ES6+ modules, zero runtime frameworks)
-- **Data & APIs:** GitHub REST API v3 with client-side localStorage caching
-- **Hosting:** GitHub Pages with automated continuous deployment
+## Run locally
 
-## 📁 Repository Structure
-
-```
-.
-├── assets/         # Avatars, icons, and static media
-├── css/
-│   └── custom.css  # Ambient spotlight, tab transitions, and theme styles
-├── js/
-│   ├── app.js      # Navigation state, UI rendering, and interactions
-│   ├── data.js     # Curated fallback project data and skills matrix
-│   └── github.js   # GitHub API client with rate-limit handling & caching
-├── index.html      # Main application entry point
-└── README.md
-```
-
-## 🚀 Running Locally
-
-No build steps or Node dependencies required. Just clone and serve:
-
-```bash
-# Clone the repository
+~~~bash
 git clone https://github.com/R3xo666/R3xo666.github.io.git
 cd R3xo666.github.io
-
-# Serve with any local HTTP server (e.g. Python)
 python3 -m http.server 8000
-```
+~~~
 
-Open [http://localhost:8000](http://localhost:8000) in your browser.
+Open [http://localhost:8000](http://localhost:8000).
 
-## 📬 Contact & Links
+## Files
 
-- **GitHub:** [@R3xo666](https://github.com/R3xo666)
-- **Discord:** `dattebayoo.bat`
-- **Email:** r3xo666.dev@gmail.com
+- index.html — page content and navigation
+- css/custom.css — layout, colors, responsive styles, and motion
+- js/app.js — repository rendering, section navigation, scroll reveals, and contact interactions
+- js/data.js — project summaries and tool list used when GitHub is unavailable
+- js/github.js — GitHub repository fetch and cache
+- assets/ — profile image and favicon
 
----
+## Links
 
-© 2026 Aditya Kumar. Released under the [MIT License](LICENSE).
+- [GitHub](https://github.com/R3xo666)
+- [Email](mailto:r3xo666.dev@gmail.com)
+- [Portfolio](https://r3xo666.github.io)
