@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090b0a">
-  <meta name="description" content="Aditya Kumar builds small Python tools for automation, data, and background tasks.">
+  <meta name="theme-color" content="#f3f0e7">
+  <meta name="description" content="Aditya Kumar builds Python tools for stock monitoring, data collection, PDFs, and Linux device workflows.">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api.github.com https://formsubmit.co; form-action https://formsubmit.co; base-uri 'self'">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/custom.css?v=folio-2">
+  <link rel="stylesheet" href="css/custom.css?v=folio-3">
   <title>Aditya Kumar — Python developer</title>
 </head>
 <body>
@@ -33,57 +33,52 @@
 
   <main id="main-content">
     <section id="overview" class="hero-section page-section" aria-labelledby="hero-title">
-      <div class="hero-halo hero-halo-one" aria-hidden="true"></div>
-      <div class="hero-halo hero-halo-two" aria-hidden="true"></div>
       <div class="hero-layout">
         <div class="hero-copy-block">
-          <p class="eyebrow" data-reveal><span class="eyebrow-mark" aria-hidden="true"></span> Python <span>/</span> automation <span>/</span> data</p>
+          <p class="eyebrow" data-reveal><span class="eyebrow-mark" aria-hidden="true"></span> Python <span>/</span> Linux <span>/</span> small tools</p>
           <h1 id="hero-title" class="hero-title" data-reveal>
-            Tools for the<br>
-            parts people still<br>
-            do <em>by hand.</em>
+            Tools for<br>
+            <em>repeat work.</em>
           </h1>
           <p class="hero-copy" data-reveal>
-            I’m Aditya. I build small Python tools for recurring jobs: checking what changed, gathering data, and moving information between formats.
+            I’m Aditya, a Python developer. I make scrapers and monitors, extract data from PDFs, and write Linux tools for Android devices.
           </p>
           <div class="hero-actions" data-reveal>
-            <a class="button button-acid" href="#work">See selected work <span aria-hidden="true">↓</span></a>
-            <a class="text-link text-link-light" href="mailto:r3xo666.dev@gmail.com">Get in touch <span aria-hidden="true">↗</span></a>
+            <a class="button button-primary" href="#work">Browse the projects <span aria-hidden="true">↓</span></a>
+            <a class="text-link text-link-light" href="mailto:r3xo666.dev@gmail.com">Email me <span aria-hidden="true">↗</span></a>
           </div>
           <div class="hero-meta" data-reveal>
-            <p class="hero-note"><span class="note-mark" aria-hidden="true"></span> Mostly Python <span class="note-divider" aria-hidden="true"></span> Built in public on GitHub</p>
+            <p class="hero-note"><span class="note-mark" aria-hidden="true"></span> Mostly Python <span class="note-divider" aria-hidden="true"></span> Code and notes on GitHub</p>
             <a class="scroll-cue" href="#work"><span>Scroll to work</span><span class="scroll-cue-line" aria-hidden="true"></span></a>
           </div>
         </div>
 
         <a class="automation-visual" href="https://github.com/R3xo666/shopify-sentinel-restock-daemon" target="_blank" rel="noopener noreferrer" aria-label="Shopify Sentinel: a Python service that watches Shopify product availability and sends Discord alerts when stock changes. View the GitHub repository." data-reveal>
-          <div class="visual-orbit visual-orbit-one" aria-hidden="true"></div>
-          <div class="visual-orbit visual-orbit-two" aria-hidden="true"></div>
           <div class="visual-topline">
-            <span class="visual-label"><span class="visual-live-dot" aria-hidden="true"></span> Featured project</span>
+            <span class="visual-label"><span class="visual-mark" aria-hidden="true"></span> Example workflow</span>
             <span class="visual-index">02 / 05</span>
           </div>
           <div class="visual-heading">
             <h2>Shopify Sentinel</h2>
-            <p>A Python service watches product availability and sends a Discord alert when stock changes.</p>
+            <p>Tracks product variants, compares each check with saved state, and alerts on changes.</p>
           </div>
-          <div class="flow-map" role="img" aria-label="Shopify products are watched by a Python service, which sends an alert to Discord when availability changes.">
+          <div class="flow-map" role="img" aria-label="Shopify product variants are compared with saved SQLite state, then changes are sent to Discord.">
             <div class="flow-wire" aria-hidden="true"></div>
             <span class="flow-signal" aria-hidden="true"></span>
             <div class="flow-step">
               <span class="flow-node"><span>01</span></span>
               <strong>Shopify</strong>
-              <small>products</small>
+              <small>variants</small>
             </div>
             <div class="flow-step">
               <span class="flow-node"><span>02</span></span>
-              <strong>Python</strong>
-              <small>watcher</small>
+              <strong>SQLite</strong>
+              <small>saved state</small>
             </div>
             <div class="flow-step">
               <span class="flow-node"><span>03</span></span>
               <strong>Discord</strong>
-              <small>alert</small>
+              <small>change alert</small>
             </div>
           </div>
           <div class="visual-bottomline">
@@ -95,21 +90,14 @@
       <span class="hero-index" aria-hidden="true">01 <i></i> 04</span>
     </section>
 
-    <div class="skill-ribbon" aria-hidden="true">
-      <div class="ribbon-track">
-        <span>Python</span><i>✳</i><span>Linux</span><i>✳</i><span>Automation</span><i>✳</i><span>Data tools</span><i>✳</i>
-        <span>Python</span><i>✳</i><span>Linux</span><i>✳</i><span>Automation</span><i>✳</i><span>Data tools</span><i>✳</i>
-      </div>
-    </div>
-
     <section id="work" class="work-section page-section" aria-labelledby="work-title">
       <div class="section-wrap">
         <div class="section-heading" data-reveal>
           <p class="eyebrow"><span class="section-number">01</span> Selected work</p>
-          <h2 id="work-title">A few tools with<br><em>a clear job.</em></h2>
-          <p class="section-intro">Small projects for monitoring, extraction, and everyday automation.</p>
+          <h2 id="work-title">Small tools.<br><em>Specific jobs.</em></h2>
+          <p class="section-intro">Monitoring, scraping, document parsing, and Linux device control.</p>
         </div>
-        <p id="project-status" class="project-status" aria-live="polite">Loading public repositories…</p>
+        <p id="project-status" class="project-status visually-hidden" aria-live="polite">Loading public repositories…</p>
         <div id="projects-grid" class="projects-grid" aria-live="polite">
           <div class="project-placeholder" aria-hidden="true"></div>
           <div class="project-placeholder" aria-hidden="true"></div>
@@ -124,17 +112,17 @@
       <div class="section-wrap">
         <div class="section-heading about-heading" data-reveal>
           <p class="eyebrow"><span class="section-number">02</span> About</p>
-          <h2 id="about-title">Python, Linux,<br><em>small utilities.</em></h2>
+          <h2 id="about-title">How I<br><em>work.</em></h2>
         </div>
         <div class="about-layout">
           <div class="about-copy" data-reveal>
-            <p>Most of my public projects solve one narrow problem: watch a product, collect a catalogue, read invoice PDFs, or send an alert when a threshold is crossed.</p>
-            <p>I work mostly in Python. For tools that run unattended, I pay attention to configuration, useful output, and what should happen when a request fails.</p>
+            <p>I use Python for most of the work here, Bash for the Android and Linux tools, and a little JavaScript for this site.</p>
+            <p>One detail I care about: DocuParse flags missing or unreadable invoice fields for review instead of treating them as complete.</p>
             <a class="text-link text-link-light" href="https://github.com/R3xo666" target="_blank" rel="noopener noreferrer">Browse my GitHub <span aria-hidden="true">↗</span></a>
           </div>
           <div class="toolkit" data-reveal>
             <div class="toolkit-heading">
-              <p class="eyebrow">Tools I use</p>
+              <p class="eyebrow">Languages & tools</p>
               <span class="toolkit-mark" aria-hidden="true">✳</span>
             </div>
             <div id="toolkit-list" class="toolkit-list"></div>
@@ -192,8 +180,8 @@
   </main>
 
   <div id="toast" role="status" aria-live="polite"></div>
-  <script src="js/data.js?v=folio-2" defer></script>
-  <script src="js/github.js?v=folio-2" defer></script>
-  <script src="js/app.js?v=folio-2" defer></script>
+  <script src="js/data.js?v=folio-3" defer></script>
+  <script src="js/github.js?v=folio-3" defer></script>
+  <script src="js/app.js?v=folio-3" defer></script>
 </body>
 </html>

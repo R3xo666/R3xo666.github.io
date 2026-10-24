@@ -10,37 +10,42 @@ const PORTFOLIO_DATA = {
     {
       repoName: "aegis-phone",
       name: "Aegis Phone",
-      summary: "A Linux tool built around ADB and scrcpy for mirroring and controlling an Android device.",
+      summary: "A Bash command-line wrapper for ADB and scrcpy, with screen mirroring, device controls, status checks, and file transfer.",
       language: "Shell",
-      tools: ["Linux", "ADB", "scrcpy"]
+      tools: ["Linux", "ADB", "scrcpy"],
+      workflow: { input: "Android device", output: "Mirror + controls", kind: "phone" }
     },
     {
       repoName: "shopify-sentinel-restock-daemon",
       name: "Shopify Sentinel",
-      summary: "A Python service that watches Shopify product availability and sends Discord alerts when stock changes.",
+      summary: "Polls public Shopify product variants, compares availability and prices with saved SQLite state, then sends Discord alerts.",
       language: "Python",
-      tools: ["AsyncIO", "SQLite", "Discord"]
+      tools: ["AsyncIO", "SQLite", "Discord"],
+      workflow: { input: "Shopify variants", output: "Discord alerts", kind: "stock" }
     },
     {
       repoName: "bookstore-catalog-scraper",
       name: "BookPulse",
-      summary: "A Python crawler that collects bookstore catalogue data and exports it to CSV or Excel.",
+      summary: "Scrapes books.toscrape.com across catalogue pages, validates each record, and exports CSV or Excel files.",
       language: "Python",
-      tools: ["BeautifulSoup", "Pydantic", "openpyxl"]
+      tools: ["BeautifulSoup", "Pydantic", "openpyxl"],
+      workflow: { input: "Book listings", output: "CSV / Excel", kind: "book" }
     },
     {
       repoName: "crypto-telegram-threshold-monitor",
       name: "SentinelPulse",
-      summary: "A self-hosted Python monitor that checks asset price thresholds and sends Telegram alerts.",
+      summary: "Checks configured price thresholds with Binance and a CoinGecko fallback, then sends Telegram alerts. It does not place trades.",
       language: "Python",
-      tools: ["AsyncIO", "Pydantic", "Telegram"]
+      tools: ["AsyncIO", "Pydantic", "Telegram"],
+      workflow: { input: "Price thresholds", output: "Telegram alerts", kind: "signal" }
     },
     {
       repoName: "batch-invoice-pdf-extractor",
       name: "DocuParse",
-      summary: "A command-line tool that extracts invoice details from PDFs and writes the results to Excel.",
+      summary: "Reads invoice fields from text-based PDFs into Excel and flags incomplete records for review. Scanned PDFs are identified; OCR is not included.",
       language: "Python",
-      tools: ["pdfplumber", "openpyxl", "Python"]
+      tools: ["pdfplumber", "openpyxl"],
+      workflow: { input: "Invoice PDFs", output: "Excel + review flags", kind: "document" }
     }
   ],
   skills: [

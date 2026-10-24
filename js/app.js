@@ -91,7 +91,7 @@ function renderProjectCard(project, index) {
 
   return [
     '<a class="project-card" href="', escapeHtml(url), '" target="_blank" rel="noopener noreferrer" aria-label="', escapeHtml(name + ": " + summary + " View GitHub repository."), '" data-reveal>',
-      renderProjectArtwork(repoName),
+      renderProjectWorkflow(project.workflow),
       '<div class="project-content">',
       '<div class="project-meta">',
         '<span>Project ', String(index + 1).padStart(2, "0"), '</span>',
@@ -105,40 +105,18 @@ function renderProjectCard(project, index) {
   ].join("");
 }
 
-function renderProjectArtwork(repoName) {
-  const artwork = {
-    "aegis-phone": {
-      kind: "phone",
-      label: "Device control · ADB + scrcpy",
-      svg: '<svg viewBox="0 0 340 250" aria-hidden="true" focusable="false"><circle class="art-fill-lilac" cx="171" cy="127" r="83" opacity=".72"/><circle class="art-stroke-thin" cx="171" cy="127" r="107"/><rect class="art-fill" x="135" y="27" width="72" height="196" rx="18"/><rect class="art-fill-lilac" x="141" y="43" width="60" height="158" rx="9"/><rect class="art-fill" x="162" y="34" width="18" height="2.5" rx="1.25"/><circle class="art-fill" cx="171" cy="212" r="4"/><path class="art-stroke" d="M66 144h43m122 0h43M78 132l-12 12 12 12m184-24 12 12-12 12"/><circle class="art-fill-acid" cx="106" cy="82" r="5"/><circle class="art-fill-clay" cx="239" cy="91" r="4"/></svg>'
-    },
-    "shopify-sentinel-restock-daemon": {
-      kind: "stock",
-      label: "Restock alerts · Shopify + Discord",
-      svg: '<svg viewBox="0 0 340 250" aria-hidden="true" focusable="false"><circle class="art-stroke-thin" cx="170" cy="126" r="101"/><path class="art-stroke-thin" d="M69 126h202M170 25v202"/><rect class="art-fill-paper" x="51" y="78" width="90" height="102" rx="13" transform="rotate(-8 51 78)"/><path class="art-stroke" d="m78 100 37-5m-34 22 43-6m-40 22 27-4"/><rect class="art-fill" x="197" y="71" width="91" height="106" rx="13" transform="rotate(8 197 71)"/><path class="art-stroke-thin" d="m215 103 45 6m-42 12 41 6"/><circle class="art-fill-acid" cx="252" cy="143" r="8"/><path class="art-path" d="M119 183c24 32 69 35 100 9"/><circle class="art-fill-clay" cx="128" cy="194" r="5"/></svg>'
-    },
-    "bookstore-catalog-scraper": {
-      kind: "book",
-      label: "Catalog collection · CSV + Excel",
-      svg: '<svg viewBox="0 0 340 250" aria-hidden="true" focusable="false"><circle class="art-fill-paper" cx="168" cy="129" r="91"/><path class="art-stroke" d="M170 60c-29-16-62-17-91-6v119c32-11 62-8 91 8 29-16 59-19 91-8V54c-29-11-62-10-91 6Z"/><path class="art-stroke-thin" d="M170 61v120M96 82c21-5 42-3 60 6m-60 15c21-5 42-3 60 6m68-27c18-9 39-11 60-6m-60 27c18-9 39-11 60-6"/><path class="art-path" d="M51 196h228"/><circle class="art-fill-acid" cx="256" cy="74" r="11"/></svg>'
-    },
-    "crypto-telegram-threshold-monitor": {
-      kind: "signal",
-      label: "Price thresholds · Telegram",
-      svg: '<svg viewBox="0 0 340 250" aria-hidden="true" focusable="false"><circle class="art-stroke-thin" cx="169" cy="125" r="102"/><circle class="art-stroke-thin" cx="169" cy="125" r="71"/><circle class="art-stroke-thin" cx="169" cy="125" r="39"/><path class="art-stroke" d="M54 156h230"/><path class="art-path" d="M53 167c31-2 32-34 61-34s31 16 55 5 28-60 55-48 35 38 63 16"/><circle class="art-fill-acid" cx="224" cy="90" r="8"/><circle class="art-fill" cx="224" cy="90" r="3"/><path class="art-stroke-thin" d="M224 90v66"/></svg>'
-    },
-    "batch-invoice-pdf-extractor": {
-      kind: "document",
-      label: "Invoice extraction · PDF to Excel",
-      svg: '<svg viewBox="0 0 340 250" aria-hidden="true" focusable="false"><path class="art-fill-paper" d="M99 37h104l41 41v137H99z"/><path class="art-stroke" d="M203 38v42h41M123 105h93m-93 22h69m-69 22h84m-84 22h55"/><rect class="art-fill-acid" x="177" y="154" width="70" height="44" rx="8" transform="rotate(-7 177 154)"/><path class="art-stroke" d="m194 176 9 8 19-20"/><circle class="art-fill-clay" cx="89" cy="73" r="8"/></svg>'
-    }
-  }[repoName];
-
-  if (!artwork) {
-    return '<div class="project-art project-art--generic" aria-hidden="true"><span class="project-art-label">Open source</span><svg viewBox="0 0 340 250" focusable="false"><circle class="art-fill-acid" cx="170" cy="125" r="72"/><circle class="art-stroke" cx="170" cy="125" r="101"/><path class="art-path" d="M64 125h212"/></svg></div>';
-  }
-
-  return '<div class="project-art project-art--' + artwork.kind + '" aria-hidden="true"><span class="project-art-label">' + escapeHtml(artwork.label) + '</span>' + artwork.svg + '</div>';
+function renderProjectWorkflow(workflow) {
+  const flow = workflow || { input: "Repository", output: "GitHub", kind: "generic" };
+  return [
+    '<div class="project-art project-art--', escapeHtml(flow.kind || "generic"), '" aria-hidden="true">',
+      '<span class="project-art-label">Input <i>→</i> result</span>',
+      '<div class="workflow-track">',
+        '<div class="workflow-node"><span class="workflow-node-mark" aria-hidden="true"></span><strong>', escapeHtml(flow.input), '</strong></div>',
+        '<span class="workflow-connector" aria-hidden="true"><i></i></span>',
+        '<div class="workflow-node"><span class="workflow-node-mark" aria-hidden="true"></span><strong>', escapeHtml(flow.output), '</strong></div>',
+      '</div>',
+    '</div>'
+  ].join("");
 }
 
 function renderToolkit() {
