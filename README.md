@@ -1,17 +1,12 @@
-# Aditya Kumar's portfolio
+# Aditya Kumar’s portfolio
 
-A single-page portfolio for my public projects in Python, automation, and data.
+A static portfolio for my Python projects in automation, data collection, and Linux tooling.
 
-## Built with
-
-- Semantic HTML and custom CSS
-- Vanilla JavaScript
-- GitHub REST API for the public repository list, with a short browser cache
-- FormSubmit for the contact form
-
-There is no build step or package install.
+The site uses HTML, CSS, and vanilla JavaScript. It loads public repository details from the GitHub API, with local project data available as a fallback. The contact form is handled by FormSubmit.
 
 ## Run locally
+
+No build step or package installation is required.
 
 ~~~bash
 git clone https://github.com/R3xo666/R3xo666.github.io.git
@@ -23,15 +18,14 @@ Open [http://localhost:8000](http://localhost:8000).
 
 ## Files
 
-- index.html — page content and navigation
-- css/custom.css — layout, colors, responsive styles, and motion
-- js/app.js — repository rendering, section navigation, scroll reveals, and contact interactions
-- js/data.js — project summaries and tool list used when GitHub is unavailable
-- js/github.js — GitHub repository fetch and cache
-- assets/ — profile image and favicon
+- `index.html` — page content and navigation
+- `css/custom.css` — layout, colors, responsive styles, and motion
+- `js/app.js` — rendering and page interactions
+- `js/data.js` — project data used when GitHub is unavailable
+- `js/github.js` — public repository fetch and cache
 
 ## Links
 
-- [GitHub](https://github.com/R3xo666)
+- [Live portfolio](https://r3xo666.github.io)
+- [GitHub profile](https://github.com/R3xo666)
 - [Email](mailto:r3xo666.dev@gmail.com)
-- [Portfolio](https://r3xo666.github.io)
