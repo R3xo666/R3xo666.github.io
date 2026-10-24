@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f3f0e7">
+  <meta name="theme-color" content="#15192a">
   <meta name="description" content="Aditya Kumar builds Python tools for stock monitoring, data collection, PDFs, and Linux device workflows.">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api.github.com https://formsubmit.co; form-action https://formsubmit.co; base-uri 'self'">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/custom.css?v=folio-3">
+  <link rel="stylesheet" href="css/custom.css?v=folio-5">
   <title>Aditya Kumar — Python developer</title>
 </head>
-<body>
+<body data-theme="night">
   <a class="skip-link" href="#main-content">Skip to content</a>
 
   <header class="site-header">
@@ -31,8 +31,18 @@
     </nav>
   </header>
 
+  <div class="reading-progress" aria-hidden="true"><span id="reading-progress-bar"></span></div>
+
   <main id="main-content">
     <section id="overview" class="hero-section page-section" aria-labelledby="hero-title">
+      <div class="hero-trace" aria-hidden="true">
+        <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+          <path class="trace-line trace-line--wide" d="M-80 220C150 64 298 92 460 220S768 449 934 280 1218 54 1520 214" />
+          <path class="trace-line trace-line--fine" d="M-80 288C164 124 316 157 478 284S771 502 950 344 1231 126 1520 280" />
+          <path class="trace-line trace-line--accent" d="M-42 338C171 190 328 212 491 336S773 547 966 402 1248 193 1496 340" />
+          <circle class="trace-node" cx="966" cy="402" r="5" />
+        </svg>
+      </div>
       <div class="hero-layout">
         <div class="hero-copy-block">
           <p class="eyebrow" data-reveal><span class="eyebrow-mark" aria-hidden="true"></span> Python <span>/</span> Linux <span>/</span> small tools</p>
@@ -56,7 +66,7 @@
         <a class="automation-visual" href="https://github.com/R3xo666/shopify-sentinel-restock-daemon" target="_blank" rel="noopener noreferrer" aria-label="Shopify Sentinel: a Python service that watches Shopify product availability and sends Discord alerts when stock changes. View the GitHub repository." data-reveal>
           <div class="visual-topline">
             <span class="visual-label"><span class="visual-mark" aria-hidden="true"></span> Example workflow</span>
-            <span class="visual-index">02 / 05</span>
+            <span class="visual-index">A small workflow</span>
           </div>
           <div class="visual-heading">
             <h2>Shopify Sentinel</h2>
@@ -98,11 +108,26 @@
           <p class="section-intro">Monitoring, scraping, document parsing, and Linux device control.</p>
         </div>
         <p id="project-status" class="project-status visually-hidden" aria-live="polite">Loading public repositories…</p>
-        <div id="projects-grid" class="projects-grid" aria-live="polite">
+        <div class="project-explorer" data-reveal>
+          <div class="project-explorer-bar">
+            <p class="project-counter"><span id="project-current">01</span><span class="counter-divider">/</span><span id="project-total">05</span><span class="counter-label">projects</span></p>
+            <p class="project-hint"><span class="project-hint--desktop">Grab a card and drag it sideways, or use the arrows</span><span class="project-hint--touch">Swipe cards, or use the arrows</span></p>
+            <div class="project-controls" aria-label="Project gallery controls">
+              <button class="project-control" type="button" data-project-prev aria-label="Previous projects" title="Previous projects">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m0 0 7-7m-7 7 7 7" /></svg>
+              </button>
+              <button class="project-control" type="button" data-project-next aria-label="Next projects" title="Next projects">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m0 0-7-7m7 7-7 7" /></svg>
+              </button>
+            </div>
+          </div>
+          <div id="projects-grid" class="projects-grid" aria-label="Selected projects" tabindex="0">
           <div class="project-placeholder" aria-hidden="true"></div>
           <div class="project-placeholder" aria-hidden="true"></div>
           <div class="project-placeholder" aria-hidden="true"></div>
           <div class="project-placeholder" aria-hidden="true"></div>
+          </div>
+          <div class="project-track" aria-hidden="true"><span id="project-track-progress"></span></div>
         </div>
       </div>
       <span class="section-index" aria-hidden="true">01</span>
@@ -177,11 +202,44 @@
       </div>
       <span class="section-index" aria-hidden="true">03</span>
     </section>
+
+    <footer class="site-footer">
+      <a class="footer-identity" href="#overview" aria-label="Aditya Kumar, back to top">
+        <span class="footer-monogram" aria-hidden="true">AK</span>
+        <span>Aditya Kumar<br><small>Python developer</small></span>
+      </a>
+      <a class="footer-github" href="https://github.com/R3xo666" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+      <a class="footer-top" href="#overview">Back to top <span aria-hidden="true">↑</span></a>
+    </footer>
   </main>
 
+  <nav class="utility-dock" aria-label="Quick navigation and display controls">
+    <a class="dock-item" href="#overview" aria-label="Introduction" title="Introduction">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z" /></svg>
+    </a>
+    <a class="dock-item" href="#work" aria-label="Selected work" title="Selected work">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5m8-5v5M8 14h3m2 0h3" /></svg>
+    </a>
+    <a class="dock-item" href="#about" aria-label="About and tools" title="About and tools">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5z"/><path d="m4.5 7.8 7.5 4.3 7.5-4.3M12 12v8.5" /></svg>
+    </a>
+    <a class="dock-item" href="#contact" aria-label="Contact" title="Contact">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6" /></svg>
+    </a>
+    <span class="dock-separator" aria-hidden="true"></span>
+    <button class="dock-item" id="motion-toggle" type="button" aria-label="Pause decorative motion" aria-pressed="false" title="Pause decorative motion">
+      <svg class="motion-icon--on" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12c2.5-7 5.5-7 9 0s6.5 7 9 0"/><path d="M3 18c2.5-4 5.5-4 9 0s6.5 4 9 0" /></svg>
+      <svg class="motion-icon--paused" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" /></svg>
+    </button>
+    <button class="dock-item" id="theme-toggle" type="button" aria-label="Switch to light theme" aria-pressed="false" title="Switch to light theme">
+      <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" /></svg>
+      <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 14.1A8.7 8.7 0 0 1 9.9 3.2 8.8 8.8 0 1 0 20.8 14.1Z" /></svg>
+    </button>
+  </nav>
+
   <div id="toast" role="status" aria-live="polite"></div>
-  <script src="js/data.js?v=folio-3" defer></script>
-  <script src="js/github.js?v=folio-3" defer></script>
-  <script src="js/app.js?v=folio-3" defer></script>
+  <script src="js/data.js?v=folio-5" defer></script>
+  <script src="js/github.js?v=folio-5" defer></script>
+  <script src="js/app.js?v=folio-5" defer></script>
 </body>
 </html>
